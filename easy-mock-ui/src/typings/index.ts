@@ -7,6 +7,8 @@ export interface MockItem {
   type: MockType;
   pattern: string;
   data: string;
+  enabled: boolean;
+  delay: number;
 }
 
 type JSONValue =

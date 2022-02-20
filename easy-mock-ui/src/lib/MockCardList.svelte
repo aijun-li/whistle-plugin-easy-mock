@@ -9,9 +9,10 @@
   const dispatch = createEventDispatcher();
 </script>
 
-{#each list as item (item.pattern)}
+{#each list as item, index (item.pattern)}
   <MockCardListItem
     {item}
+    first={index === 0}
     selected={item.pattern === selectedItem.pattern}
     on:click={() => {
       if (selectedItem.pattern === item.pattern) {

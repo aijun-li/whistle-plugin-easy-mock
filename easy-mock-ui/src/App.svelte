@@ -18,17 +18,20 @@
   import { saveRuleList, getRuleList } from './services';
 
   const DefaultData = '{}';
+  const DefaultSelectedItem = {
+    type: MockType.IDL,
+    pattern: '',
+    data: '',
+    delay: 0,
+    enabled: true,
+  };
   const tabs = [
     { label: 'IDL', value: MockType.IDL },
     { label: 'HTTP', value: MockType.HTTP },
   ];
 
   let selectedType = MockType.IDL;
-  let selectedItem: MockItem = {
-    type: selectedType,
-    pattern: '',
-    data: '',
-  };
+  let selectedItem: MockItem = { ...DefaultSelectedItem };
   let content: Content = {
     text: '',
   };
@@ -54,9 +57,8 @@
 
   function onTabChange(event) {
     selectedItem = {
+      ...DefaultSelectedItem,
       type: event.detail.value,
-      pattern: '',
-      data: '',
     };
     content = {
       text: '',
@@ -85,6 +87,8 @@
       type: selectedType,
       pattern: newRulePattern,
       data: DefaultData,
+      delay: 0,
+      enabled: true,
     };
     if (selectIDL) {
       idlList = [newMockItem, ...idlList];
@@ -105,6 +109,20 @@
   }
 
   async function onSave() {
+    // if no item is currently selected, save directly
+    if (!selectedItem.pattern) {
+      try {
+        await saveRuleList({
+          idl: idlList,
+          http: httpList,
+        });
+        showToast('Saved successfully!');
+      } catch (e) {
+        showToast(e.message);
+      }
+      return;
+    }
+
     const snapshot = editor.get();
     const arr = selectIDL ? [...idlList] : [...httpList];
     const idx = arr.findIndex((item) => item.pattern === selectedItem.pattern);
@@ -182,8 +200,8 @@
   }
 </script>
 
-{#await Promise.resolve()}
-  <!-- {#await fetchRemoteRules()} -->
+<!-- {#await Promise.resolve()} -->
+{#await fetchRemoteRules()}
   <Loading />
 {:then}
   <div class="flex">
@@ -204,7 +222,6 @@
       <div class="flex-1" />
       <Button
         class="!rounded-none"
-        disabled={!selectedItem.pattern}
         selected={false}
         on:click={onSave}
         rectangle
@@ -221,20 +238,22 @@
         New
       </Button>
     </div>
-    <div class="w-1/2 border-r p-8 overflow-auto">
-      <H3 class="pl-10">
+    <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col">
+      <H3 class="pl-15">
         {selectIDL ? 'Service Method' : 'URL Path'}</H3
       >
-      <div class="w-14/15 mt-5">
-        <MockCardList
-          list={selectIDL ? idlList : httpList}
-          bind:selectedItem
-          on:select={onItemSelect}
-          on:delete={onDelete}
-        />
+      <div class="mt-5 flex-1 overflow-y-auto overflow-x-visible">
+        <div class="pr-15 pb-3">
+          <MockCardList
+            list={selectIDL ? idlList : httpList}
+            bind:selectedItem
+            on:select={onItemSelect}
+            on:delete={onDelete}
+          />
+        </div>
       </div>
     </div>
-    <div class="flex-1 min-w-lg flex flex-col">
+    <div class="flex-1 h-screen min-w-lg flex flex-col">
       <JSONEditor bind:content bind:this={editor} mainMenuBar={true} />
     </div>
   </div>
