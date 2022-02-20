@@ -12,28 +12,55 @@ function resolveJSON(data) {
   return JSON.stringify(obj);
 }
 
+function sleep(num) {
+  return new Promise((res) => {
+    setTimeout(res, num);
+  });
+}
+
 module.exports = (server, options) => {
   // handle http request
-  server.on("request", (req, res) => {
+  server.on("request", async (req, res) => {
     const { pathname, searchParams } = new URL(req.originalReq.url);
     const serviceMethod = searchParams.get("service_method");
     const isIDL = Boolean(serviceMethod);
-
     const rules = options.storage.getProperty(isIDL ? "idl" : "http");
+
     let finalResponse = "";
+    let resDelay = 0;
+
     try {
-      rules.some(({ pattern, data }) => {
+      rules.some(({ pattern, data, enabled, delay }) => {
+        // check if rule enabled
+        if (!enabled) {
+          return false;
+        }
+
+        // check if match rules
         if (
           (isIDL && serviceMethod === pattern) ||
           (!isIDL && pathname.includes(pattern))
         ) {
+          resDelay = delay * 1000;
+
+          // check if data is empty object
+          if (data === "{}") {
+            return true;
+          }
+
           finalResponse = resolveJSON(data);
           return true;
         }
+
+        return false;
       });
     } catch {
-      finalResponse = `Rule with pattern '${pattern}' is invalid!`;
+      finalResponse = `Error: Rule with pattern '${pattern}' is invalid!`;
       console.error(finalResponse);
+    }
+
+    if (resDelay) {
+      await sleep(resDelay);
     }
 
     if (finalResponse) {
