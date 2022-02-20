@@ -18,6 +18,10 @@
   import { saveRuleList, getRuleList } from './services';
 
   const DefaultData = '{}';
+  const tabs = [
+    { label: 'IDL', value: MockType.IDL },
+    { label: 'HTTP', value: MockType.HTTP },
+  ];
 
   let selectedType = MockType.IDL;
   let selectedItem: MockItem = {
@@ -178,46 +182,41 @@
   }
 </script>
 
-<!-- {#await Promise.resolve()} -->
-{#await fetchRemoteRules()}
+{#await Promise.resolve()}
+  <!-- {#await fetchRemoteRules()} -->
   <Loading />
 {:then}
   <div class="flex">
     <div class="w-fit h-screen border-r flex flex-col justify-between">
       <div>
-        <Tab
-          contentClass="w-full justify-center"
-          value={MockType.IDL}
-          name="mock-type"
-          bind:group={selectedType}
-          on:change={onTabChange}
-        >
-          IDL
-        </Tab>
-        <Tab
-          contentClass="w-full justify-center"
-          value={MockType.HTTP}
-          name="mock-type"
-          bind:group={selectedType}
-          on:change={onTabChange}
-        >
-          HTTP
-        </Tab>
+        {#each tabs as tab (tab.label)}
+          <Tab
+            contentClass="w-full justify-center !rounded-none"
+            value={tab.value}
+            name="mock-type"
+            bind:group={selectedType}
+            on:change={onTabChange}
+          >
+            {tab.label}
+          </Tab>
+        {/each}
       </div>
       <div class="flex-1" />
       <Button
-        class="corner-btn"
+        class="!rounded-none"
         disabled={!selectedItem.pattern}
         selected={false}
         on:click={onSave}
+        rectangle
       >
         Save
       </Button>
       <Button
-        class="corner-btn"
+        class="!rounded-none"
         on:click={() => {
           newDialogVisible = true;
         }}
+        rectangle
       >
         New
       </Button>
@@ -302,11 +301,6 @@
           margin: 3em;
         }
       }
-    }
-    .btn.corner-btn {
-      font-size: 1.1rem;
-      padding: 1.2rem;
-      border-radius: 0;
     }
   }
 </style>
