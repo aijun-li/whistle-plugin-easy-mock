@@ -2,11 +2,17 @@
 
 A whistle plugin for mocking json data.
 
-![options](./whistle.easy-mock/img/demo.gif)
+![demo](https://raw.githubusercontent.com/aijun-li/whistle-plugin-easy-mock/main/whistle.easy-mock/img/demo.gif)
+
+## Usage
+
+Add rule in whistle:
+
+```
+[your pattern] easy-mock://
+```
 
 ## Feature
-
----
 
 - Mock data by matching in order of preference:
   1. The value for `service_method` key in the query (fixed at the moment, to be changed in the future)
