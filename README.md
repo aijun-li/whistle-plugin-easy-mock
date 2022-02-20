@@ -2,7 +2,7 @@
 
 A whistle plugin for mocking json data.
 
-![options](./img/demo.gif)
+![options](./whistle.easy-mock/img/demo.gif)
 
 ## Feature
 

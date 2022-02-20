@@ -181,6 +181,9 @@
         ...DefaultSelectedItem,
         type: selectedType,
       };
+      content = {
+        text: '',
+      };
       showToast('Deleted successfully!');
     } catch (e) {
       showToast(e.message);
