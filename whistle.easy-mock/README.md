@@ -1,12 +1,18 @@
 # whistle.easy-mock
 
-A whistle plugin for mocking json data.
+A simple mock plugin with ui for whistle
 
 ![demo](https://raw.githubusercontent.com/aijun-li/whistle-plugin-easy-mock/main/whistle.easy-mock/img/demo.gif)
 
 ## Usage
 
-Add rule in whistle:
+Install plugin
+
+```shell
+npm i -g whistle.easy-mock
+```
+
+Then add rule in whistle:
 
 ```
 [your pattern] easy-mock://
