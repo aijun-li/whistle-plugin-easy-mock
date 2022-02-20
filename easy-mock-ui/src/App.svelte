@@ -177,6 +177,10 @@
       } else {
         httpList = arr;
       }
+      selectedItem = {
+        ...DefaultSelectedItem,
+        type: selectedType,
+      };
       showToast('Deleted successfully!');
     } catch (e) {
       showToast(e.message);
@@ -242,7 +246,7 @@
       <H3 class="pl-15">
         {selectIDL ? 'Service Method' : 'URL Path'}</H3
       >
-      <div class="mt-5 flex-1 overflow-y-auto overflow-x-visible">
+      <div class="pt-5 flex-1 overflow-y-auto overflow-x-visible">
         <div class="pr-15 pb-3">
           <MockCardList
             list={selectIDL ? idlList : httpList}
