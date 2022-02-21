@@ -44,7 +44,9 @@ module.exports = (server, options) => {
     let body = await getBody(req);
 
     if (typeof body === "string" && body.length > 0) {
-      body = JSON.parse(body);
+      try {
+        body = JSON.parse(body);
+      } catch {}
     }
 
     const serviceMethod =
