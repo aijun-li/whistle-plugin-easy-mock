@@ -32,7 +32,10 @@ module.exports = (server, options) => {
     const oReq = req.originalReq;
     const { pathname, searchParams } = new URL(oReq.url);
 
-    const body = await getBody(req);
+    let body = await getBody(req);
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
     const serviceMethod =
       searchParams.get("service_method") || body.service_method;
     const isIDL = Boolean(serviceMethod);
