@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { JSONEditor } from 'svelte-jsoneditor';
+  import { JSONEditor } from "svelte-jsoneditor";
   import {
     Button,
     Tab,
@@ -11,33 +11,33 @@
     H3,
     Loading,
     Headline,
-  } from 'attractions';
-  import { SnackbarPositions } from 'attractions/snackbar';
-  import { Content, MockItem, MockType } from './typings';
-  import MockCardList from './lib/MockCardList.svelte';
-  import { saveRuleList, getRuleList } from './services';
+  } from "attractions";
+  import { SnackbarPositions } from "attractions/snackbar";
+  import { Content, MockItem, MockType } from "./typings";
+  import MockCardList from "./lib/MockCardList.svelte";
+  import { saveRuleList, getRuleList } from "./services";
 
-  const DefaultData = '{}';
+  const DefaultData = "{}";
   const DefaultSelectedItem = {
     type: MockType.IDL,
-    pattern: '',
-    data: '',
+    pattern: "",
+    data: "",
     delay: 0,
     enabled: true,
   };
   const tabs = [
-    { label: 'IDL', value: MockType.IDL },
-    { label: 'HTTP', value: MockType.HTTP },
+    { label: "IDL", value: MockType.IDL },
+    { label: "HTTP", value: MockType.HTTP },
   ];
 
   let selectedType = MockType.IDL;
   let selectedItem: MockItem = { ...DefaultSelectedItem };
   let content: Content = {
-    text: '',
+    text: "",
   };
   let editor;
   let toast;
-  let newRulePattern = '';
+  let newRulePattern = "";
   let newDialogVisible = false;
 
   let idlList: MockItem[] = [];
@@ -61,7 +61,7 @@
       type: event.detail.value,
     };
     content = {
-      text: '',
+      text: "",
     };
     setTimeout(() => {
       editor.expand();
@@ -80,7 +80,7 @@
   function onAddNewRule(closeModal) {
     const arr = selectIDL ? idlList : httpList;
     if (arr.some((item) => item.pattern === newRulePattern)) {
-      showToast('Pattern already exists!');
+      showToast("Pattern already exists!");
       return;
     }
     const newMockItem = {
@@ -95,7 +95,7 @@
     } else {
       httpList = [newMockItem, ...httpList];
     }
-    newRulePattern = '';
+    newRulePattern = "";
     selectedItem = newMockItem;
     content = {
       text: newMockItem.data,
@@ -116,7 +116,7 @@
           idl: idlList,
           http: httpList,
         });
-        showToast('Saved successfully!');
+        showToast("Saved successfully!");
       } catch (e) {
         showToast(e.message);
       }
@@ -147,7 +147,7 @@
         http: httpList,
       });
 
-      showToast('Saved successfully!');
+      showToast("Saved successfully!");
     } catch (e) {
       showToast(e.message);
     }
@@ -182,9 +182,9 @@
         type: selectedType,
       };
       content = {
-        text: '',
+        text: "",
       };
-      showToast('Deleted successfully!');
+      showToast("Deleted successfully!");
     } catch (e) {
       showToast(e.message);
     }
@@ -195,17 +195,26 @@
       const json = snapshot.json ?? JSON.parse(snapshot.text);
 
       for (const key of Object.keys(json)) {
-        if (key === '') {
+        if (key === "") {
           delete json[key];
         }
       }
 
       return JSON.stringify(json);
     } catch (e) {
-      throw new Error('Invalid JSON format!');
+      throw new Error("Invalid JSON format!");
     }
   }
 </script>
+
+<svelte:window
+  on:keydown={(event) => {
+    if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      onSave();
+    }
+  }}
+/>
 
 <!-- {#await Promise.resolve()} -->
 {#await fetchRemoteRules()}
@@ -247,7 +256,7 @@
     </div>
     <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col">
       <H3 class="pl-15">
-        {selectIDL ? 'Service Method' : 'URL Path'}</H3
+        {selectIDL ? "Service Method" : "URL Path"}</H3
       >
       <div class="pt-5 flex-1 overflow-y-auto overflow-x-visible">
         <div class="pr-15 pb-3">
@@ -256,6 +265,7 @@
             bind:selectedItem
             on:select={onItemSelect}
             on:delete={onDelete}
+            on:toggle={onSave}
           />
         </div>
       </div>
@@ -272,11 +282,11 @@
     let:closeCallback={closeModal}
   >
     <Dialog title={`Add New ${selectedType.toUpperCase()} Rule`} danger>
-      <FormField name={selectIDL ? 'Service Method' : 'URL Path'} required>
+      <FormField name={selectIDL ? "Service Method" : "URL Path"} required>
         <TextField
           bind:value={newRulePattern}
           on:keydown={(e) => {
-            if (e.detail.nativeEvent.code === 'Enter') {
+            if (e.detail.nativeEvent.code === "Enter") {
               onAddNewRule(closeModal);
             }
           }}
@@ -286,7 +296,7 @@
       <div class="flex justify-around">
         <Button
           on:click={() => {
-            newRulePattern = '';
+            newRulePattern = "";
             closeModal();
           }}
         >

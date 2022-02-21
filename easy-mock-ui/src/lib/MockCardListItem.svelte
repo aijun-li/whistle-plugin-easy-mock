@@ -7,10 +7,10 @@
     Switch,
     Slider,
     Divider,
-  } from 'attractions';
-  import { createEventDispatcher } from 'svelte';
-  import { PopoverPositions } from 'attractions/popover';
-  import type { MockItem } from 'src/typings';
+  } from "attractions";
+  import { createEventDispatcher } from "svelte";
+  import { PopoverPositions } from "attractions/popover";
+  import type { MockItem } from "src/typings";
 
   export let item: MockItem;
   export let selected: boolean;
@@ -22,7 +22,7 @@
 
   function deleteWithConfirm() {
     if (willDelte) {
-      dispatch('delete');
+      dispatch("delete");
     } else {
       willDelte = true;
       setTimeout(() => {
@@ -37,7 +37,11 @@
 {/if}
 
 <div class="flex">
-  <Switch class="mx-3" bind:value={item.enabled} />
+  <Switch
+    class="mx-3"
+    bind:value={item.enabled}
+    on:change={() => dispatch("toggle")}
+  />
   <div class="py-2 self-stretch mr-2 ml-1">
     <Slider
       class=""
@@ -55,7 +59,7 @@
     popoverClass="delete-btn-popover"
     position={PopoverPositions.RIGHT}
   >
-    <Button {selected} class="w-full" on:click={() => dispatch('click')}>
+    <Button {selected} class="w-full" on:click={() => dispatch("click")}>
       <H3 class="w-full text-left px-1 !m-0">{item.pattern}</H3>
     </Button>
     <div slot="popover-content">

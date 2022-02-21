@@ -41,6 +41,6 @@ Then add rule in whistle:
   ```
 
 - Support setting response delay (0 - 5s)
-  - Set delay to > 0 and leave the mock data as an empty data "{}" will work like delaying the real response
+  - Set delay to > 0 and leave the mock data as an empty object "{}" will work like delaying the real response
 
 Attention: all operations (except deleting) will only take effect after clicking 'Save' button.
