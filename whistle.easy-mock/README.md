@@ -12,10 +12,10 @@ Install plugin
 npm i -g whistle.easy-mock
 ```
 
-Then add rule in whistle:
+Then add rule in whistle (can specify the host to replace):
 
 ```
-[your pattern] easy-mock://
+[your pattern] easy-mock://[host]
 ```
 
 ## Feature

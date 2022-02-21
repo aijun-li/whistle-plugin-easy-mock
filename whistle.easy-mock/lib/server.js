@@ -30,6 +30,15 @@ module.exports = (server, options) => {
   // handle http request
   server.on("request", async (req, res) => {
     const oReq = req.originalReq;
+
+    const { ruleValue } = oReq;
+    if (ruleValue && req.setReqRules) {
+      console.log(req.setReqRules, req.setReqRules.length);
+      req.setReqRules(`* ${ruleValue}`);
+    } else if (!req.setReqRules) {
+      console.error("Do not have reqSetRules@");
+    }
+
     const { pathname, searchParams } = new URL(oReq.url);
 
     let body = await getBody(req);
