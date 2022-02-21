@@ -18,11 +18,23 @@ function sleep(num) {
   });
 }
 
+function getBody(req) {
+  return new Promise((res) => {
+    req.getReqSession((s) => {
+      res(s.req.body);
+    });
+  });
+}
+
 module.exports = (server, options) => {
   // handle http request
   server.on("request", async (req, res) => {
-    const { pathname, searchParams } = new URL(req.originalReq.url);
-    const serviceMethod = searchParams.get("service_method");
+    const oReq = req.originalReq;
+    const { pathname, searchParams } = new URL(oReq.url);
+
+    const body = await getBody(req);
+    const serviceMethod =
+      searchParams.get("service_method") || body.service_method;
     const isIDL = Boolean(serviceMethod);
     const rules = options.storage.getProperty(isIDL ? "idl" : "http");
 
