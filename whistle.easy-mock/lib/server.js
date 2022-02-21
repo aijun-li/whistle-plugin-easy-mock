@@ -33,11 +33,14 @@ module.exports = (server, options) => {
     const { pathname, searchParams } = new URL(oReq.url);
 
     let body = await getBody(req);
-    if (typeof body === "string") {
+
+    if (typeof body === "string" && body.length > 0) {
       body = JSON.parse(body);
     }
+
     const serviceMethod =
       searchParams.get("service_method") || body.service_method;
+
     const isIDL = Boolean(serviceMethod);
     const rules = options.storage.getProperty(isIDL ? "idl" : "http");
 
