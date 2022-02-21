@@ -200,7 +200,7 @@
         }
       }
 
-      return JSON.stringify(json);
+      return JSON.stringify(json, null, 2);
     } catch (e) {
       throw new Error("Invalid JSON format!");
     }
@@ -271,7 +271,12 @@
       </div>
     </div>
     <div class="flex-1 h-screen min-w-lg flex flex-col">
-      <JSONEditor bind:content bind:this={editor} mainMenuBar={true} />
+      <JSONEditor
+        bind:content
+        bind:this={editor}
+        mainMenuBar={true}
+        onBlur={onSave}
+      />
     </div>
   </div>
 
