@@ -11,6 +11,7 @@
     H3,
     Loading,
     Headline,
+    Breadcrumbs,
   } from 'attractions';
   import { SnackbarPositions } from 'attractions/snackbar';
   import { Collection, Content, MockItem, MockType } from '../typings';
@@ -47,6 +48,8 @@
 
   let idlList: MockItem[] = [];
   let httpList: MockItem[] = [];
+
+  $: crumbItems = [{ href: '/', text: 'Collections' }, { text: `${collection?.title} #${collection?.id}` }];
 
   $: selectIDL = selectedType === MockType.IDL;
 
@@ -176,7 +179,7 @@
               idl: idlList,
               http: arr,
             },
-        true
+        true,
       );
       if (selectIDL) {
         idlList = arr;
@@ -242,14 +245,7 @@
         {/each}
       </div>
       <div class="flex-1" />
-      <Button
-        class="!rounded-none"
-        selected={false}
-        on:click={onSave}
-        rectangle
-      >
-        Save
-      </Button>
+      <Button class="!rounded-none" selected={false} on:click={onSave} rectangle>Save</Button>
       <Button
         class="!rounded-none"
         on:click={() => {
@@ -261,7 +257,10 @@
       </Button>
     </div>
     <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col">
-      <H3 class="pl-15">
+      <div>
+        <Breadcrumbs items={crumbItems} />
+      </div>
+      <H3 class="pl-12">
         {selectIDL ? 'Service Method' : 'URL Path'}</H3
       >
       <div class="pt-5 flex-1 overflow-y-auto overflow-x-visible">
@@ -277,22 +276,12 @@
       </div>
     </div>
     <div class="flex-1 h-screen min-w-lg flex flex-col">
-      <JSONEditor
-        bind:content
-        bind:this={editor}
-        mainMenuBar={true}
-        onBlur={onSave}
-        mode="code"
-      />
+      <JSONEditor bind:content bind:this={editor} mainMenuBar={true} onBlur={onSave} mode="code" />
     </div>
   </div>
 
   <!-- modal for adding new rule -->
-  <Modal
-    bind:open={newDialogVisible}
-    noClickaway
-    let:closeCallback={closeModal}
-  >
+  <Modal bind:open={newDialogVisible} noClickaway let:closeCallback={closeModal}>
     <Dialog title={`Add New ${selectedType.toUpperCase()} Rule`} danger>
       <FormField name={selectIDL ? 'Service Method' : 'URL Path'} required>
         <TextField
@@ -314,21 +303,13 @@
         >
           Cancel
         </Button>
-        <Button
-          disabled={!newRulePattern}
-          on:click={() => onAddNewRule(closeModal)}
-        >
-          Confirm
-        </Button>
+        <Button disabled={!newRulePattern} on:click={() => onAddNewRule(closeModal)}>Confirm</Button>
       </div>
     </Dialog>
   </Modal>
 
   <!-- Toast -->
-  <SnackbarContainer
-    bind:this={toast}
-    position={SnackbarPositions.TOP_MIDDLE}
-  />
+  <SnackbarContainer bind:this={toast} position={SnackbarPositions.TOP_MIDDLE} />
 {:catch}
   <Headline class="flex justify-center items-center w-screen h-screen">
     Failed to fetch rule list! Please refresh!

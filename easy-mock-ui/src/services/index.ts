@@ -66,11 +66,7 @@ export async function getCollection(id: string): Promise<Collection> {
   return data;
 }
 
-export async function saveCollection(
-  id: string,
-  rules: Rules,
-  isDelete = false
-) {
+export async function saveCollection(id: string, rules: Rules, isDelete = false) {
   const res = await fetch(`${PREFIX}/collection/${id}`, {
     method: 'PUT',
     headers: {
