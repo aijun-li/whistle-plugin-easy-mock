@@ -25,6 +25,7 @@
     "windicss": "^3.4.3"
   },
   "dependencies": {
+    "svelte-feather-icons": "^3.5.1",
     "svelte-jsoneditor": "^0.3.18",
     "svelte-routing": "^1.6.0"
   }

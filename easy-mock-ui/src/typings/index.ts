@@ -27,3 +27,8 @@ export interface Rules {
   idl: MockItem[];
   http: MockItem[];
 }
+
+export interface CollectionBrief {
+  title: string;
+  id: string;
+}
