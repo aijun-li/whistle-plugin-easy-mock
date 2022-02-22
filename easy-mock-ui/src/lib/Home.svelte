@@ -1,31 +1,27 @@
 <script lang="ts">
-  import {
-    Button,
-    Dialog,
-    FormField,
-    Headline,
-    Loading,
-    Modal,
-    SnackbarContainer,
-    TextField,
-  } from "attractions";
-  import { push } from "svelte-spa-router";
-  import { SnackbarPositions } from "attractions/snackbar";
-  import {
-    createCollection,
-    deleteCollection,
-    getCollectionsBrief,
-  } from "../services";
-  import type { CollectionBrief } from "../typings";
-  import CollectionCard from "./CollectionCard.svelte";
+  import { Button, Dialog, FormField, Headline, Loading, Modal, SnackbarContainer, TextField } from 'attractions';
+  import { push } from 'svelte-spa-router';
+  import { SnackbarPositions } from 'attractions/snackbar';
+  import { createCollection, deleteCollection, getCollectionsBrief } from '../services';
+  import type { CollectionBrief } from '../typings';
+  import CollectionCard from './CollectionCard.svelte';
 
   let briefs: CollectionBrief[] = [] as CollectionBrief[];
   let createDialogVisible = false;
 
-  let newCollectionTitle = "";
-  let newCollectionId = "";
+  let newCollectionTitle = '';
+  let newCollectionId = '';
 
   let toast;
+
+  $: if (!createDialogVisible) {
+    resetForm();
+  }
+
+  function resetForm() {
+    newCollectionId = '';
+    newCollectionTitle = '';
+  }
 
   function showToast(msg: string, duration = 1500) {
     toast.showSnackbar({ props: { text: msg }, duration });
@@ -36,18 +32,18 @@
   }
 
   function onEnterDown(e, closeModal) {
-    if (e.detail.nativeEvent.code === "Enter") {
+    if (e.detail.nativeEvent.code === 'Enter') {
       onCreateCollection(closeModal);
     }
   }
 
   async function onCreateCollection(closeModal) {
     if (!newCollectionTitle || !newCollectionId) {
-      showToast("Please fill in required field!");
-    } else if (newCollectionId.includes(" ")) {
-      showToast("ID cannot contain space!");
+      showToast('Please fill in required field!');
+    } else if (newCollectionId.includes(' ')) {
+      showToast('ID cannot contain space!');
     } else if (briefs.some((brief) => brief.id === newCollectionId)) {
-      showToast("ID already exists!");
+      showToast('ID already exists!');
     } else {
       try {
         const newBrief = {
@@ -68,7 +64,7 @@
     try {
       await deleteCollection(id);
       await fetchCollectionsBrief();
-      showToast("Deleted successfully!");
+      showToast('Deleted successfully!');
     } catch (e) {
       showToast(e.message);
     }
@@ -104,11 +100,7 @@
   </div>
 
   <!-- modal for creating new collection -->
-  <Modal
-    bind:open={createDialogVisible}
-    noClickaway
-    let:closeCallback={closeModal}
-  >
+  <Modal bind:open={createDialogVisible} noClickaway let:closeCallback={closeModal}>
     <Dialog title="Create New Collection" danger>
       <FormField name="Title" required>
         <TextField
@@ -130,27 +122,21 @@
       <div class="flex justify-around">
         <Button
           on:click={() => {
-            newCollectionId = "";
-            newCollectionTitle = "";
+            newCollectionId = '';
+            newCollectionTitle = '';
             closeModal();
           }}
         >
           Cancel
         </Button>
-        <Button
-          disabled={!newCollectionId || !newCollectionTitle}
-          on:click={() => onCreateCollection(closeModal)}
-        >
+        <Button disabled={!newCollectionId || !newCollectionTitle} on:click={() => onCreateCollection(closeModal)}>
           Confirm
         </Button>
       </div>
     </Dialog>
   </Modal>
 
-  <SnackbarContainer
-    bind:this={toast}
-    position={SnackbarPositions.TOP_MIDDLE}
-  />
+  <SnackbarContainer bind:this={toast} position={SnackbarPositions.TOP_MIDDLE} />
 {:catch}
   <Headline class="flex justify-center items-center w-screen h-screen">
     Failed to fetch collections info! Please refresh!
