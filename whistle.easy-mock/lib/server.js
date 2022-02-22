@@ -1,5 +1,5 @@
 const Mock = require("mockjs");
-const LocalKey = require("./const");
+const { LocalKey } = require("./const");
 
 function resolveJSON(data) {
   const obj = Mock.mock(JSON.parse(data));
@@ -32,12 +32,13 @@ module.exports = (server, options) => {
   server.on("request", async (req, res) => {
     const oReq = req.originalReq;
 
-    const { ruleValue } = oReq;
-    if (ruleValue && req.setReqRules) {
-      console.log(req.setReqRules, req.setReqRules.length);
-      req.setReqRules(`* ${ruleValue}`);
-    } else if (!req.setReqRules) {
-      console.error("Do not have reqSetRules@");
+    const { ruleValue = "" } = oReq;
+    const parsedRules = ruleValue.split("|");
+
+    const id = parsedRules[0] || "default";
+    const host = parsedRules[1] || "";
+    if (host && req.setReqRules) {
+      req.setReqRules(`* ${host}`);
     }
 
     const { pathname, searchParams } = new URL(oReq.url);
@@ -54,7 +55,9 @@ module.exports = (server, options) => {
       searchParams.get("service_method") || body.service_method;
 
     const isIDL = Boolean(serviceMethod);
-    const rules = options.storage.getProperty(isIDL ? "idl" : "http");
+    const collections = options.storage.getProperty(LocalKey.Collections);
+    const collection = collections.find((c) => c.id === id);
+    const rules = collection.rules[isIDL ? "idl" : "http"];
 
     let finalResponse = "";
     let resDelay = 0;

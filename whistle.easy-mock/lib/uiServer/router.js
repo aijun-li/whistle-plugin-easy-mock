@@ -68,7 +68,7 @@ module.exports = (router) => {
   });
 
   router.put(`${PREFIX}/collection/:id`, (ctx) => {
-    const { rules } = ctx.request.body;
+    const rules = ctx.request.body;
     const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
     const collection = collections.find(({ id }) => id === ctx.params.id);
     collection.rules = rules;
