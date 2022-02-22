@@ -2,6 +2,7 @@
 
 A simple mock plugin with ui for whistle
 
+![collection](https://raw.githubusercontent.com/aijun-li/whistle-plugin-easy-mock/main/whistle.easy-mock/img/collection.png)
 ![demo](https://raw.githubusercontent.com/aijun-li/whistle-plugin-easy-mock/main/whistle.easy-mock/img/demo.gif)
 
 ## Usage
@@ -12,14 +13,22 @@ Install plugin
 npm i -g whistle.easy-mock
 ```
 
-Then add rule in whistle (can specify the host to replace):
+Then add rule in whistle
+Accept two parameters, separated by '|':
+
+1. (optional) collection id: select which collection to take effect
+2. (optional) host: replace the host of the matched request
 
 ```
-[your pattern] easy-mock://[host]
+[pattern] easy-mock://[collection id]|[host]
+
+// if you only want to set host (do not miss the '|')
+[pattern] easy-mock://|host
 ```
 
 ## Feature
 
+- Create collections to manage your mock data
 - Mock data by matching in order of preference:
   1. The value for `service_method` key in the query (fixed at the moment, to be changed in the future)
   2. URL pathname
