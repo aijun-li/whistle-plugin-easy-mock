@@ -55,9 +55,9 @@ module.exports = (server, options) => {
       searchParams.get("service_method") || body.service_method;
 
     const isIDL = Boolean(serviceMethod);
-    const collections = options.storage.getProperty(LocalKey.Collections);
+    const collections = options.storage.getProperty(LocalKey.Collections) ?? [];
     const collection = collections.find((c) => c.id === id);
-    const rules = collection.rules[isIDL ? "idl" : "http"];
+    const rules = collection?.rules[isIDL ? "idl" : "http"] ?? [];
 
     let finalResponse = "";
     let resDelay = 0;
