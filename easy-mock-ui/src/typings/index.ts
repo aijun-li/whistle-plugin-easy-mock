@@ -1,6 +1,6 @@
 export const enum MockType {
-  IDL = 'idl',
-  HTTP = 'http',
+  IDL = "idl",
+  HTTP = "http",
 }
 
 export interface MockItem {
@@ -31,4 +31,8 @@ export interface Rules {
 export interface CollectionBrief {
   title: string;
   id: string;
+}
+
+export interface Collection extends CollectionBrief {
+  rules: Rules;
 }

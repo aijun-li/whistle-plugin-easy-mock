@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { Router, Link, Route } from 'svelte-routing';
-  import Collection from './lib/Collection.svelte';
-  import Home from './lib/Home.svelte';
+  import Router from "svelte-spa-router";
+  import Collection from "./lib/Collection.svelte";
+  import Home from "./lib/Home.svelte";
+
+  const routes = {
+    "/": Home,
+    "/collection/:id": Collection,
+  };
 </script>
 
-<Router>
-  <Route path="/" component={Home} />
-  <Route path="/collection/:id" component={Collection} />
-</Router>
+<Router {routes} />

@@ -1,8 +1,63 @@
 <script lang="ts">
-  import { Button, Card, H3, Headline } from "attractions";
-  import { PlusIcon } from "svelte-feather-icons";
-  import { Link } from "svelte-routing";
+  import {
+    Button,
+    Dialog,
+    FormField,
+    Headline,
+    Loading,
+    Modal,
+    SnackbarContainer,
+    TextField,
+  } from "attractions";
+  import { push } from "svelte-spa-router";
+  import { SnackbarPositions } from "attractions/snackbar";
+  import { createCollection, getCollectionsBrief } from "../services";
+  import type { CollectionBrief } from "../typings";
   import CollectionCard from "./CollectionCard.svelte";
+
+  let briefs: CollectionBrief[] = [] as CollectionBrief[];
+  let createDialogVisible = false;
+
+  let newCollectionTitle = "";
+  let newCollectionId = "";
+
+  let toast;
+
+  function showToast(msg: string, duration = 1500) {
+    toast.showSnackbar({ props: { text: msg }, duration });
+  }
+
+  async function fetchCollectionsBrief() {
+    briefs = await getCollectionsBrief();
+  }
+
+  function onEnterDown(e, closeModal) {
+    if (e.detail.nativeEvent.code === "Enter") {
+      onCreateCollection(closeModal);
+    }
+  }
+
+  async function onCreateCollection(closeModal) {
+    if (!newCollectionTitle || !newCollectionId) {
+      showToast("Please fill in required field!");
+    } else if (newCollectionId.includes(" ")) {
+      showToast("ID cannot contain space!");
+    } else if (briefs.some((brief) => brief.id === newCollectionId)) {
+      showToast("ID already exists!");
+    } else {
+      try {
+        const newBrief = {
+          title: newCollectionTitle,
+          id: newCollectionId,
+        };
+        await createCollection(newBrief);
+        await fetchCollectionsBrief();
+        closeModal();
+      } catch (e) {
+        showToast(e.message);
+      }
+    }
+  }
 </script>
 
 <svelte:head>
@@ -13,14 +68,78 @@
   </style>
 </svelte:head>
 
-<div class="w-screen container">
-  {#each Array(20)
-    .fill(0)
-    .map((item) => ({ title: "test", id: "tt" })) as item, index (index)}
-    <CollectionCard brief={item} />
-  {/each}
-  <CollectionCard empty />
-</div>
+<!-- {#await Promise.resolve()} -->
+{#await fetchCollectionsBrief()}
+  <Loading />
+{:then}
+  <div class="w-screen container">
+    {#each briefs as brief (brief.id)}
+      <CollectionCard
+        {brief}
+        on:click={() => push(`/collection/${brief.id}`)}
+      />
+    {/each}
+    <CollectionCard
+      empty
+      on:click={() => {
+        createDialogVisible = true;
+      }}
+    />
+  </div>
+
+  <!-- modal for creating new collection -->
+  <Modal
+    bind:open={createDialogVisible}
+    noClickaway
+    let:closeCallback={closeModal}
+  >
+    <Dialog title="Create New Collection" danger>
+      <FormField name="Title" required>
+        <TextField
+          bind:value={newCollectionTitle}
+          autofocus
+          on:keydown={(e) => {
+            onEnterDown(e, closeModal);
+          }}
+        />
+      </FormField>
+      <FormField name="ID" required>
+        <TextField
+          bind:value={newCollectionId}
+          on:keydown={(e) => {
+            onEnterDown(e, closeModal);
+          }}
+        />
+      </FormField>
+      <div class="flex justify-around">
+        <Button
+          on:click={() => {
+            newCollectionId = "";
+            newCollectionTitle = "";
+            closeModal();
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          disabled={!newCollectionId || !newCollectionTitle}
+          on:click={() => onCreateCollection(closeModal)}
+        >
+          Confirm
+        </Button>
+      </div>
+    </Dialog>
+  </Modal>
+
+  <SnackbarContainer
+    bind:this={toast}
+    position={SnackbarPositions.TOP_MIDDLE}
+  />
+{:catch}
+  <Headline class="flex justify-center items-center w-screen h-screen">
+    Failed to fetch collections info! Please refresh!
+  </Headline>
+{/await}
 
 <style lang="scss">
   @mixin grid-gap-row($gap) {

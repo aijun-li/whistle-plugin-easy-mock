@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { JSONEditor } from 'svelte-jsoneditor';
+  import { JSONEditor } from "svelte-jsoneditor";
   import {
     Button,
     Tab,
@@ -11,35 +11,38 @@
     H3,
     Loading,
     Headline,
-  } from 'attractions';
-  import { SnackbarPositions } from 'attractions/snackbar';
-  import { Content, MockItem, MockType } from '../typings';
-  import MockCardList from './MockCardList.svelte';
-  import { saveRuleList, getRuleList } from '../services';
+  } from "attractions";
+  import { SnackbarPositions } from "attractions/snackbar";
+  import { Collection, Content, MockItem, MockType } from "../typings";
+  import MockCardList from "./MockCardList.svelte";
+  import { saveCollection, getCollection } from "../services";
 
-  export let id: string;
+  export let params = {} as { id: string };
 
-  const DefaultData = '{}';
+  $: id = params.id;
+
+  const DefaultData = "{}";
   const DefaultSelectedItem = {
     type: MockType.IDL,
-    pattern: '',
-    data: '',
+    pattern: "",
+    data: "",
     delay: 0,
     enabled: true,
   };
   const tabs = [
-    { label: 'IDL', value: MockType.IDL },
-    { label: 'HTTP', value: MockType.HTTP },
+    { label: "IDL", value: MockType.IDL },
+    { label: "HTTP", value: MockType.HTTP },
   ];
 
+  let collection: Collection;
   let selectedType = MockType.IDL;
   let selectedItem: MockItem = { ...DefaultSelectedItem };
   let content: Content = {
-    text: '',
+    text: "",
   };
   let editor;
   let toast;
-  let newRulePattern = '';
+  let newRulePattern = "";
   let newDialogVisible = false;
 
   let idlList: MockItem[] = [];
@@ -48,9 +51,9 @@
   $: selectIDL = selectedType === MockType.IDL;
 
   async function fetchRemoteRules() {
-    const { idl, http } = await getRuleList();
-    idlList = idl;
-    httpList = http;
+    collection = await getCollection(id);
+    idlList = collection.rules.idl ?? [];
+    httpList = collection.rules.http ?? [];
   }
 
   function showToast(msg: string, duration = 1500) {
@@ -63,7 +66,7 @@
       type: event.detail.value,
     };
     content = {
-      text: '',
+      text: "",
     };
     setTimeout(() => {
       editor.expand();
@@ -82,7 +85,7 @@
   function onAddNewRule(closeModal) {
     const arr = selectIDL ? idlList : httpList;
     if (arr.some((item) => item.pattern === newRulePattern)) {
-      showToast('Pattern already exists!');
+      showToast("Pattern already exists!");
       return;
     }
     const newMockItem = {
@@ -97,7 +100,7 @@
     } else {
       httpList = [newMockItem, ...httpList];
     }
-    newRulePattern = '';
+    newRulePattern = "";
     selectedItem = newMockItem;
     content = {
       text: newMockItem.data,
@@ -114,11 +117,11 @@
     // if no item is currently selected, save directly
     if (!selectedItem.pattern) {
       try {
-        await saveRuleList({
+        await saveCollection(id, {
           idl: idlList,
           http: httpList,
         });
-        showToast('Saved successfully!');
+        showToast("Saved successfully!");
       } catch (e) {
         showToast(e.message);
       }
@@ -144,12 +147,12 @@
         text: updateItem.data,
       };
 
-      await saveRuleList({
+      await saveCollection(id, {
         idl: idlList,
         http: httpList,
       });
 
-      showToast('Saved successfully!');
+      showToast("Saved successfully!");
     } catch (e) {
       showToast(e.message);
     }
@@ -162,7 +165,8 @@
 
     try {
       arr.splice(idx, 1);
-      await saveRuleList(
+      await saveCollection(
+        id,
         selectIDL
           ? {
               idl: arr,
@@ -184,9 +188,9 @@
         type: selectedType,
       };
       content = {
-        text: '',
+        text: "",
       };
-      showToast('Deleted successfully!');
+      showToast("Deleted successfully!");
     } catch (e) {
       showToast(e.message);
     }
@@ -197,29 +201,29 @@
       const json = snapshot.json ?? JSON.parse(snapshot.text);
 
       for (const key of Object.keys(json)) {
-        if (key === '') {
+        if (key === "") {
           delete json[key];
         }
       }
 
       return JSON.stringify(json, null, 2);
     } catch (e) {
-      throw new Error('Invalid JSON format!');
+      throw new Error("Invalid JSON format!");
     }
   }
 </script>
 
 <svelte:window
   on:keydown={(event) => {
-    if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
+    if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       onSave();
     }
   }}
 />
 
-{#await Promise.resolve()}
-  <!-- {#await fetchRemoteRules()} -->
+<!-- {#await Promise.resolve()} -->
+{#await fetchRemoteRules()}
   <Loading />
 {:then}
   <div class="flex">
@@ -258,7 +262,7 @@
     </div>
     <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col">
       <H3 class="pl-15">
-        {selectIDL ? 'Service Method' : 'URL Path'}</H3
+        {selectIDL ? "Service Method" : "URL Path"}</H3
       >
       <div class="pt-5 flex-1 overflow-y-auto overflow-x-visible">
         <div class="pr-15 pb-3">
@@ -289,21 +293,21 @@
     let:closeCallback={closeModal}
   >
     <Dialog title={`Add New ${selectedType.toUpperCase()} Rule`} danger>
-      <FormField name={selectIDL ? 'Service Method' : 'URL Path'} required>
+      <FormField name={selectIDL ? "Service Method" : "URL Path"} required>
         <TextField
           bind:value={newRulePattern}
           on:keydown={(e) => {
-            if (e.detail.nativeEvent.code === 'Enter') {
+            if (e.detail.nativeEvent.code === "Enter") {
               onAddNewRule(closeModal);
             }
           }}
-          autofocus={true}
+          autofocus
         />
       </FormField>
       <div class="flex justify-around">
         <Button
           on:click={() => {
-            newRulePattern = '';
+            newRulePattern = "";
             closeModal();
           }}
         >

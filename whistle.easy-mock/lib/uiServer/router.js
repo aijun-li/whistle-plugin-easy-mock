@@ -1,34 +1,73 @@
-// For help see https://github.com/ZijianHe/koa-router#api-reference
+const PREFIX = "/api";
+const LocalKey = {
+  Collections: "collections",
+};
+const CollectionType = {
+  title: "",
+  id: "",
+  rules: [],
+};
+
 module.exports = (router) => {
-  router.get("/api/rules", (ctx) => {
-    const idl = ctx.storage.getProperty("idl");
-    const http = ctx.storage.getProperty("http");
+  router.get(`${PREFIX}/collection`, (ctx) => {
+    const collections = (
+      ctx.storage.getProperty(LocalKey.Collections) ?? []
+    ).map(({ title, id }) => ({
+      title,
+      id,
+    }));
+    ctx.body = {
+      code: 0,
+      msg: "",
+      data: collections,
+    };
+  });
+
+  router.post(`${PREFIX}/collection`, (ctx) => {
+    const { title, id } = ctx.request.body;
+    const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
+    collections.push({ title, id, rules: [] });
+    ctx.storage.setProperty(LocalKey.Collections, collections);
 
     ctx.body = {
       code: 0,
       msg: "",
-      data: {
-        idl: idl ?? [],
-        http: http ?? [],
-      },
     };
   });
 
-  router.post("/api/rules", (ctx) => {
-    const { idl, http } = ctx.request.body;
+  router.delete(`${PREFIX}/collection/:id`, (ctx) => {
+    const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
+    const idx = collections.findIndex(({ id }) => id === ctx.params.id);
+    collections.splice(idx, 1);
+    ctx.storage.setProperty(LocalKey.Collections, collections);
 
-    if (!Array.isArray(idl) || !Array.isArray(http)) {
-      ctx.body = {
-        code: -1,
-        msg: "Rule list for IDL and HTTP must be array!",
-      };
-    } else {
-      ctx.storage.setProperty("idl", idl);
-      ctx.storage.setProperty("http", http);
-      ctx.body = {
-        code: 0,
-        msg: "",
-      };
-    }
+    ctx.body = {
+      code: 0,
+      msg: "",
+    };
+  });
+
+  router.get(`${PREFIX}/collection/:id`, (ctx) => {
+    const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
+    const collection = collections.find(({ id }) => id === ctx.params.id);
+
+    ctx.body = {
+      code: 0,
+      msg: "",
+      data: collection,
+    };
+  });
+
+  router.put(`${PREFIX}/collection/:id`, (ctx) => {
+    const { rules } = ctx.request.body;
+    const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
+    const collection = collections.find(({ id }) => id === ctx.params.id);
+    collection.rules = rules;
+    ctx.storage.setProperty(LocalKey.Collections, collections);
+
+    ctx.body = {
+      code: 0,
+      msg: "",
+    };
   });
 };

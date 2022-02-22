@@ -3,10 +3,12 @@
   import { PlusIcon } from "svelte-feather-icons";
   import { classes } from "attractions/utils";
   import type { CollectionBrief } from "src/typings";
-  import { navigate } from "svelte-routing";
+  import { createEventDispatcher } from "svelte";
 
   export let brief: CollectionBrief = {} as CollectionBrief;
   export let empty = false;
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <Button
@@ -20,7 +22,7 @@
   )}
   outline
   on:click={() => {
-    navigate("/collection/2");
+    dispatch("click");
   }}
 >
   {#if empty}
