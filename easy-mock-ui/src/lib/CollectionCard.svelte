@@ -38,7 +38,7 @@
     {/if}
   </Button>
   <div slot="popover-content">
-    {#if !empty}
+    {#if !empty && brief.id !== "default"}
       <div>
         <DeleteDot
           on:delete={() => {

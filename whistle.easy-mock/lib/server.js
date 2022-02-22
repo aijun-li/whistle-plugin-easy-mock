@@ -1,4 +1,5 @@
 const Mock = require("mockjs");
+const LocalKey = require("./const");
 
 function resolveJSON(data) {
   const obj = Mock.mock(JSON.parse(data));

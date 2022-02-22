@@ -1,12 +1,5 @@
 const PREFIX = "/api";
-const LocalKey = {
-  Collections: "collections",
-};
-const CollectionType = {
-  title: "",
-  id: "",
-  rules: [],
-};
+const { LocalKey } = require("../const");
 
 module.exports = (router) => {
   router.get(`${PREFIX}/collection`, (ctx) => {
@@ -16,6 +9,22 @@ module.exports = (router) => {
       title,
       id,
     }));
+
+    if (collections.length === 0 || collections[0].id !== "default") {
+      const oldIDL = ctx.storage.getProperty("idl");
+      const oldHTTP = ctx.storage.getProperty("http");
+      const defaultCollection = {
+        title: "Default",
+        id: "default",
+        rules: {
+          idl: oldIDL ?? [],
+          http: oldHTTP ?? [],
+        },
+      };
+      collections.unshift(defaultCollection);
+      ctx.storage.setProperty(LocalKey.Collections, collections);
+    }
+
     ctx.body = {
       code: 0,
       msg: "",
@@ -26,7 +35,7 @@ module.exports = (router) => {
   router.post(`${PREFIX}/collection`, (ctx) => {
     const { title, id } = ctx.request.body;
     const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
-    collections.push({ title, id, rules: [] });
+    collections.push({ title, id, rules: { idl: [], http: [] } });
     ctx.storage.setProperty(LocalKey.Collections, collections);
 
     ctx.body = {
