@@ -11,25 +11,13 @@
   import { createEventDispatcher } from "svelte";
   import { PopoverPositions } from "attractions/popover";
   import type { MockItem } from "src/typings";
+  import DeleteDot from "./DeleteDot.svelte";
 
   export let item: MockItem;
   export let selected: boolean;
   export let first: boolean = false;
 
   const dispatch = createEventDispatcher();
-
-  let willDelte = false;
-
-  function deleteWithConfirm() {
-    if (willDelte) {
-      dispatch("delete");
-    } else {
-      willDelte = true;
-      setTimeout(() => {
-        willDelte = false;
-      }, 1000);
-    }
-  }
 </script>
 
 {#if !first}
@@ -64,8 +52,8 @@
       <H3 class="w-full text-left px-1 !m-0">{item.pattern}</H3>
     </Button>
     <div slot="popover-content">
-      <div class="ml-2" on:click={deleteWithConfirm}>
-        <Dot class="delete-dot" attention={!willDelte} danger={willDelte} />
+      <div class="ml-2">
+        <DeleteDot on:delete={() => dispatch("delete")} />
       </div>
     </div>
   </Popover>
@@ -73,14 +61,6 @@
 
 <style lang="scss">
   :global {
-    .delete-dot.dot {
-      width: 1.5rem;
-      height: 1.5rem;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
     .popover-container {
       &:focus-within > .popover.popover.delete-btn-popover {
         display: none;

@@ -11,7 +11,11 @@
   } from "attractions";
   import { push } from "svelte-spa-router";
   import { SnackbarPositions } from "attractions/snackbar";
-  import { createCollection, getCollectionsBrief } from "../services";
+  import {
+    createCollection,
+    deleteCollection,
+    getCollectionsBrief,
+  } from "../services";
   import type { CollectionBrief } from "../typings";
   import CollectionCard from "./CollectionCard.svelte";
 
@@ -52,10 +56,21 @@
         };
         await createCollection(newBrief);
         await fetchCollectionsBrief();
+        // briefs = [...briefs, newBrief];
         closeModal();
       } catch (e) {
         showToast(e.message);
       }
+    }
+  }
+
+  async function onDeleteCollection(id: string) {
+    try {
+      await deleteCollection(id);
+      await fetchCollectionsBrief();
+      showToast("Deleted successfully!");
+    } catch (e) {
+      showToast(e.message);
     }
   }
 </script>
@@ -77,6 +92,7 @@
       <CollectionCard
         {brief}
         on:click={() => push(`/collection/${brief.id}`)}
+        on:delete={() => onDeleteCollection(brief.id)}
       />
     {/each}
     <CollectionCard
@@ -157,12 +173,12 @@
   }
 
   .container {
-    padding: 2vh 1.5vw;
+    padding: 3vh 2vw;
     display: grid;
     grid-template-columns: repeat(6, 15vw);
     grid-auto-rows: 30vh;
 
-    @include grid-gap-row(3vh);
+    @include grid-gap-row(2vh);
     @include grid-gap-col(1.2vw);
   }
 </style>
