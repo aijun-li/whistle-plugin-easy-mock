@@ -33,7 +33,7 @@
 </script>
 
 {#if !first}
-  <Divider class="!m-2" />
+  <Divider class="!m-4" />
 {/if}
 
 <div class="flex">
@@ -42,15 +42,16 @@
     bind:value={item.enabled}
     on:change={() => dispatch("toggle")}
   />
-  <div class="py-2 self-stretch mr-2 ml-1">
+  <div class="self-stretch mr-8 ml-1">
     <Slider
       class=""
       bind:value={item.delay}
       min={0}
-      max={5}
+      max={15}
       step={0.5}
       tooltips="active"
       vertical
+      ticks={{ mode: "steps", step: 3, subDensity: 10 }}
     />
   </div>
 
