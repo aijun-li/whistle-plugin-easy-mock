@@ -49,7 +49,10 @@
   let idlList: MockItem[] = [];
   let httpList: MockItem[] = [];
 
-  $: crumbItems = [{ href: '/', text: 'Collections' }, { text: `${collection?.title} #${collection?.id}` }];
+  $: crumbItems = [
+    { href: '/whistle.easy-mock', text: 'Collections' },
+    { text: `${collection?.title} #${collection?.id}` },
+  ];
 
   $: selectIDL = selectedType === MockType.IDL;
 
