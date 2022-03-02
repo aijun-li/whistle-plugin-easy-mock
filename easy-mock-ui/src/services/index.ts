@@ -86,3 +86,26 @@ export async function saveCollection(id: string, rules: Rules, isDelete = false)
     throw new Error(errMsg);
   }
 }
+
+export async function updateZapStatus(id: string, enable: boolean) {
+  const res = await fetch(`${PREFIX}/collection/${id}/zap`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      enable,
+    }),
+  });
+
+  const errMsg = 'Failed to toggle zap mode!';
+
+  if (!res.ok) {
+    throw new Error(`Server Error: ${errMsg}`);
+  }
+  const { code, msg } = await res.json();
+  if (code) {
+    console.error(msg);
+    throw new Error(errMsg);
+  }
+}

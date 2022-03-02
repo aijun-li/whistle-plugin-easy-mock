@@ -1,6 +1,6 @@
 export const enum MockType {
-  IDL = "idl",
-  HTTP = "http",
+  IDL = 'idl',
+  HTTP = 'http',
 }
 
 export interface MockItem {
@@ -11,12 +11,7 @@ export interface MockItem {
   delay: number;
 }
 
-type JSONValue =
-  | string
-  | number
-  | boolean
-  | { [x: string]: JSONValue }
-  | Array<JSONValue>;
+type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>;
 
 export interface Content {
   text?: string;
@@ -35,4 +30,5 @@ export interface CollectionBrief {
 
 export interface Collection extends CollectionBrief {
   rules: Rules;
+  zap: boolean;
 }

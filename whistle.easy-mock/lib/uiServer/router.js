@@ -1,21 +1,19 @@
-const PREFIX = "/api";
-const { LocalKey } = require("../const");
+const PREFIX = '/api';
+const { LocalKey } = require('../const');
 
 module.exports = (router) => {
   router.get(`${PREFIX}/collection`, (ctx) => {
-    const collections = (
-      ctx.storage.getProperty(LocalKey.Collections) ?? []
-    ).map(({ title, id }) => ({
+    const collections = (ctx.storage.getProperty(LocalKey.Collections) ?? []).map(({ title, id }) => ({
       title,
       id,
     }));
 
-    if (collections.length === 0 || collections[0].id !== "default") {
-      const oldIDL = ctx.storage.getProperty("idl");
-      const oldHTTP = ctx.storage.getProperty("http");
+    if (collections.length === 0 || collections[0].id !== 'default') {
+      const oldIDL = ctx.storage.getProperty('idl');
+      const oldHTTP = ctx.storage.getProperty('http');
       const defaultCollection = {
-        title: "Default",
-        id: "default",
+        title: 'Default',
+        id: 'default',
         rules: {
           idl: oldIDL ?? [],
           http: oldHTTP ?? [],
@@ -27,7 +25,7 @@ module.exports = (router) => {
 
     ctx.body = {
       code: 0,
-      msg: "",
+      msg: '',
       data: collections,
     };
   });
@@ -39,17 +37,17 @@ module.exports = (router) => {
     if (collections.some((c) => c.id === id)) {
       ctx.body = {
         code: -1,
-        msg: "Invalid collection id!",
+        msg: 'Invalid collection id!',
       };
       return;
     }
 
-    collections.push({ title, id, rules: { idl: [], http: [] } });
+    collections.push({ title, id, rules: { idl: [], http: [] }, zap: false });
     ctx.storage.setProperty(LocalKey.Collections, collections);
 
     ctx.body = {
       code: 0,
-      msg: "",
+      msg: '',
     };
   });
 
@@ -60,7 +58,7 @@ module.exports = (router) => {
     if (idx < 0) {
       ctx.body = {
         code: -1,
-        msg: "Invalid collection id!",
+        msg: 'Invalid collection id!',
       };
       return;
     }
@@ -70,7 +68,7 @@ module.exports = (router) => {
 
     ctx.body = {
       code: 0,
-      msg: "",
+      msg: '',
     };
   });
 
@@ -81,12 +79,12 @@ module.exports = (router) => {
     ctx.body = collection
       ? {
           code: 0,
-          msg: "",
+          msg: '',
           data: collection,
         }
       : {
           code: -1,
-          msg: "Invalid collection id!",
+          msg: 'Invalid collection id!',
         };
   });
 
@@ -98,7 +96,7 @@ module.exports = (router) => {
     if (!collection) {
       ctx.body = {
         code: -1,
-        msg: "Invalid collection id!",
+        msg: 'Invalid collection id!',
       };
       return;
     }
@@ -108,7 +106,38 @@ module.exports = (router) => {
 
     ctx.body = {
       code: 0,
-      msg: "",
+      msg: '',
+    };
+  });
+
+  router.put(`${PREFIX}/collection/:id/zap`, (ctx) => {
+    const body = ctx.request.body;
+
+    if (!body || typeof body.enable !== 'boolean') {
+      ctx.body = {
+        code: -1,
+        msg: 'Invalid parameter enable!',
+      };
+      return;
+    }
+
+    const collections = ctx.storage.getProperty(LocalKey.Collections) ?? [];
+    const collection = collections.find(({ id }) => id === ctx.params.id);
+
+    if (!collection) {
+      ctx.body = {
+        code: -1,
+        msg: 'Invalid collection id!',
+      };
+      return;
+    }
+
+    collection.zap = body.enable;
+    ctx.storage.setProperty(LocalKey.Collections, collections);
+
+    ctx.body = {
+      code: 0,
+      msg: '',
     };
   });
 };

@@ -12,11 +12,15 @@
     Loading,
     Headline,
     Breadcrumbs,
+    Popover,
+    Chip,
   } from 'attractions';
   import { SnackbarPositions } from 'attractions/snackbar';
   import { Collection, Content, MockItem, MockType } from '../typings';
   import MockCardList from './MockCardList.svelte';
-  import { saveCollection, getCollection } from '../services';
+  import { saveCollection, getCollection, updateZapStatus } from '../services';
+  import { ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
+  import { PopoverPositions } from 'attractions/popover';
 
   export let params = {} as { id: string };
 
@@ -202,6 +206,16 @@
     }
   }
 
+  async function onToggleZap() {
+    try {
+      await updateZapStatus(collection.id, !collection.zap);
+      collection.zap = !collection.zap;
+      showToast(collection.zap ? 'Turn on Zap mode!' : 'Turn off Zap mode!');
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
   function validateJSON(snapshot: Content) {
     try {
       const json = snapshot.json ?? JSON.parse(snapshot.text);
@@ -248,9 +262,21 @@
         {/each}
       </div>
       <div class="flex-1" />
-      <Button class="!rounded-none" selected={false} on:click={onSave} rectangle>Save</Button>
+      <Popover position={PopoverPositions.RIGHT}>
+        <Button class="!rounded-none flex justify-center w-full" rectangle on:click={onToggleZap}>
+          {#if collection.zap}
+            <ZapIcon size="1.5x" />
+          {:else}
+            <ZapOffIcon size="1.5x" />
+          {/if}
+        </Button>
+        <div slot="popover-content">
+          <Chip>Turn on Zap mode will cache all GET/POST requests.</Chip>
+        </div>
+      </Popover>
+      <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
       <Button
-        class="!rounded-none"
+        class="!rounded-none w-full"
         on:click={() => {
           newDialogVisible = true;
         }}
