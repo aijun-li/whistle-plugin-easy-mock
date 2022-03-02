@@ -271,7 +271,7 @@
           {/if}
         </Button>
         <div slot="popover-content">
-          <Chip>Turn on Zap mode will cache all GET/POST requests.</Chip>
+          <Chip>(Experimental!) Turn on Zap mode will cache all JSON response from GET/POST requests.</Chip>
         </div>
       </Popover>
       <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
