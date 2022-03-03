@@ -3,7 +3,7 @@
   import { createEventDispatcher } from 'svelte';
   import { PopoverPositions } from 'attractions/popover';
   import type { MockItem } from 'src/typings';
-  import DeleteDot from './DeleteDot.svelte';
+  import DeleteIcon from './DeleteIcon.svelte';
 
   export let item: MockItem;
   export let selected: boolean;
@@ -37,7 +37,7 @@
     </Button>
     <div slot="popover-content">
       <div class="ml-2">
-        <DeleteDot on:delete={() => dispatch('delete')} />
+        <DeleteIcon on:delete={() => dispatch('delete')} />
       </div>
     </div>
   </Popover>

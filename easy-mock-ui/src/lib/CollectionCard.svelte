@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Button, H3, Headline, Popover } from "attractions";
-  import { PlusIcon } from "svelte-feather-icons";
-  import { classes } from "attractions/utils";
-  import type { CollectionBrief } from "src/typings";
-  import { createEventDispatcher } from "svelte";
-  import DeleteDot from "./DeleteDot.svelte";
-  import { PopoverPositions } from "attractions/popover";
+  import { Button, H3, Headline, Popover } from 'attractions';
+  import { PlusIcon } from 'svelte-feather-icons';
+  import { classes } from 'attractions/utils';
+  import type { CollectionBrief } from 'src/typings';
+  import { createEventDispatcher } from 'svelte';
+  import DeleteIcon from './DeleteIcon.svelte';
+  import { PopoverPositions } from 'attractions/popover';
 
   export let brief: CollectionBrief = {} as CollectionBrief;
   export let empty = false;
@@ -15,17 +15,10 @@
 
 <Popover position={PopoverPositions.TOP}>
   <Button
-    class={classes(
-      "collection-card-btn",
-      "!border-3",
-      "!p-4",
-      "w-full",
-      "h-full",
-      empty && "!border-dashed"
-    )}
+    class={classes('collection-card-btn', '!border-3', '!p-4', 'w-full', 'h-full', empty && '!border-dashed')}
     outline
     on:click={() => {
-      dispatch("click");
+      dispatch('click');
     }}
   >
     {#if empty}
@@ -38,11 +31,11 @@
     {/if}
   </Button>
   <div slot="popover-content">
-    {#if !empty && brief.id !== "default"}
+    {#if !empty && brief.id !== 'default'}
       <div>
-        <DeleteDot
+        <DeleteIcon
           on:delete={() => {
-            dispatch("delete");
+            dispatch('delete');
           }}
         />
       </div>
