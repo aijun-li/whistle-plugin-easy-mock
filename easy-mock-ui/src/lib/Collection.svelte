@@ -13,7 +13,7 @@
     Headline,
     Breadcrumbs,
     Popover,
-    Chip,
+    Card,
   } from 'attractions';
   import { SnackbarPositions } from 'attractions/snackbar';
   import { Collection, Content, MockItem, MockType } from '../typings';
@@ -224,11 +224,19 @@
         if (key === '') {
           delete json[key];
         }
+        if (key.startsWith('$$$') && key.length > 3 && typeof json[key] === 'string') {
+          try {
+            json[key.slice(1)] = JSON.parse(json[key]);
+            delete json[key];
+          } catch (e) {
+            throw new Error(`Not a valid JSON string for '$$$' property!`);
+          }
+        }
       }
 
       return JSON.stringify(json, null, 2);
     } catch (e) {
-      throw new Error('Invalid JSON format!');
+      throw new Error('Invalid JSON format: ' + e.message);
     }
   }
 </script>
@@ -271,7 +279,7 @@
           {/if}
         </Button>
         <div slot="popover-content">
-          <Chip>(Experimental!) Turn on Zap mode will cache all JSON response from GET/POST requests.</Chip>
+          <Card>(Experimental!) Turn on Zap mode will cache all JSON response from GET/POST requests.</Card>
         </div>
       </Popover>
       <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
