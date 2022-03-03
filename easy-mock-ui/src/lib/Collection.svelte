@@ -14,12 +14,14 @@
     Breadcrumbs,
     Popover,
     Card,
+    Pagination,
+    H2,
   } from 'attractions';
   import { SnackbarPositions } from 'attractions/snackbar';
   import { Collection, Content, MockItem, MockType } from '../typings';
   import MockCardList from './MockCardList.svelte';
   import { saveCollection, getCollection, updateZapStatus } from '../services';
-  import { ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
+  import { MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { PopoverPositions } from 'attractions/popover';
   import { tick } from 'svelte';
 
@@ -31,9 +33,10 @@
   const DefaultSelectedItem = {
     type: MockType.IDL,
     pattern: '',
-    data: '',
+    data: [''],
     delay: 0,
     enabled: true,
+    idx: 0,
   };
   const tabs = [
     { label: 'IDL', value: MockType.IDL },
@@ -60,6 +63,8 @@
   ];
 
   $: selectIDL = selectedType === MockType.IDL;
+
+  $: hasSelectedRule = Boolean(selectedItem.pattern);
 
   $: if (newDialogVisible) {
     tick().then(() => {
@@ -89,18 +94,12 @@
     content = {
       text: '',
     };
-    setTimeout(() => {
-      editor.expand();
-    }, 0);
   }
 
   function onItemSelect() {
     content = {
-      text: selectedItem.data,
+      text: selectedItem.data[selectedItem.idx],
     };
-    setTimeout(() => {
-      editor.expand();
-    }, 0);
   }
 
   function onAddNewRule(closeModal) {
@@ -112,9 +111,10 @@
     const newMockItem = {
       type: selectedType,
       pattern: newRulePattern,
-      data: DefaultData,
+      data: [DefaultData],
       delay: 0,
       enabled: true,
+      idx: 0,
     };
     if (selectIDL) {
       idlList = [newMockItem, ...idlList];
@@ -123,19 +123,19 @@
     }
     selectedItem = newMockItem;
     content = {
-      text: newMockItem.data,
+      text: DefaultData,
     };
 
     closeModal();
     setTimeout(() => {
-      editor.expand();
+      // editor.expand();
       editor.focus();
     }, 100);
   }
 
   async function onSave() {
     // if no item is currently selected, save directly
-    if (!selectedItem.pattern) {
+    if (!hasSelectedRule) {
       try {
         await saveCollection(id, {
           idl: idlList,
@@ -154,7 +154,7 @@
     const updateItem = arr.splice(idx, 1)[0];
 
     try {
-      updateItem.data = validateJSON(snapshot);
+      updateItem.data[updateItem.idx] = validateJSON(snapshot);
 
       arr.splice(idx, 0, updateItem);
 
@@ -164,7 +164,7 @@
         httpList = arr;
       }
       content = {
-        text: updateItem.data,
+        text: updateItem.data[updateItem.idx],
       };
 
       await saveCollection(id, {
@@ -248,6 +248,31 @@
     } catch (e) {
       throw new Error('Invalid JSON format: ' + e.message);
     }
+  }
+
+  async function onCreateNewPage() {
+    const copyData = selectedItem.data[selectedItem.idx];
+    selectedItem.data.push(copyData);
+    selectedItem.idx = selectedItem.data.length - 1;
+    content = {
+      text: selectedItem.data[selectedItem.idx],
+    };
+    await tick();
+    onSave();
+  }
+
+  async function onDeleteCurrentPage() {
+    if (selectedItem.data.length === 1) {
+      return;
+    }
+    const currentIdx = selectedItem.idx;
+    selectedItem.idx = currentIdx === selectedItem.data.length - 1 ? currentIdx - 1 : currentIdx;
+    selectedItem.data.splice(currentIdx, 1);
+    content = {
+      text: selectedItem.data[selectedItem.idx],
+    };
+    await tick();
+    onSave();
   }
 </script>
 
@@ -333,8 +358,39 @@
         </div>
       </div>
     </div>
-    <div class="flex-1 h-screen min-w-lg flex flex-col">
+    <div class="flex-1 h-screen min-w-lg flex flex-col justify-start">
       <JSONEditor bind:content bind:this={editor} mainMenuBar={true} onBlur={onSave} mode="code" />
+      <div class="flex justify-between items-center p-2">
+        <Button class="!p-2" round disabled={!hasSelectedRule} on:click={onCreateNewPage}>
+          <PlusIcon size="2x" />
+        </Button>
+        {#if !hasSelectedRule}
+          <H2 class="!m-0">select a rule to operate</H2>
+        {:else}
+          <Pagination
+            class="!m-0"
+            pages={selectedItem.data.length}
+            currentPage={selectedItem.idx + 1}
+            on:change={async (event) => {
+              const { value } = event.detail;
+              selectedItem.idx = value - 1;
+              content = {
+                text: selectedItem.data[value - 1],
+              };
+              await tick();
+              onSave();
+            }}
+          />
+        {/if}
+        <Button
+          class="!p-2"
+          round
+          disabled={!hasSelectedRule || selectedItem.data.length === 1}
+          on:click={onDeleteCurrentPage}
+        >
+          <MinusIcon size="2x" />
+        </Button>
+      </div>
     </div>
   </div>
 

@@ -3,25 +3,10 @@ const { LocalKey } = require('../const');
 
 module.exports = (router) => {
   router.get(`${PREFIX}/collection`, (ctx) => {
-    const collections = (ctx.storage.getProperty(LocalKey.Collections) ?? []).map(({ title, id }) => ({
+    const collections = ctx.storage.getProperty(LocalKey.Collections)?.map(({ title, id }) => ({
       title,
       id,
     }));
-
-    if (collections.length === 0 || collections[0].id !== 'default') {
-      const oldIDL = ctx.storage.getProperty('idl');
-      const oldHTTP = ctx.storage.getProperty('http');
-      const defaultCollection = {
-        title: 'Default',
-        id: 'default',
-        rules: {
-          idl: oldIDL ?? [],
-          http: oldHTTP ?? [],
-        },
-      };
-      collections.unshift(defaultCollection);
-      ctx.storage.setProperty(LocalKey.Collections, collections);
-    }
 
     ctx.body = {
       code: 0,

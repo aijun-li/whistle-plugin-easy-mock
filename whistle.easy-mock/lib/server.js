@@ -76,12 +76,13 @@ module.exports = (server, options) => {
     let hasMatchRule = false;
 
     try {
-      rules.some(({ pattern, data, enabled, delay }) => {
+      rules.some(({ pattern, data, enabled, delay, idx }) => {
         // check if rule enabled
         if (!enabled) {
           return false;
         }
 
+        const json = data[idx];
         // check if match rules
         if ((isIDL && serviceMethod === pattern) || (!isIDL && pathname.includes(pattern))) {
           resDelay = delay * 1000;
@@ -89,8 +90,8 @@ module.exports = (server, options) => {
           hasMatchRule = true;
 
           // check if data is empty object
-          if (data !== '{}') {
-            finalResponse = resolveJSON(data);
+          if (json !== '{}') {
+            finalResponse = resolveJSON(json);
           }
 
           return true;

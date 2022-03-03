@@ -1,9 +1,10 @@
 exports.LocalKey = {
-  Collections: "collections",
+  Collections: 'collections',
+  Version: 'version',
 };
 
 const CollectionType = {
-  title: "",
-  id: "",
+  title: '',
+  id: '',
   rules: [],
 };

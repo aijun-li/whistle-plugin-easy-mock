@@ -6,9 +6,10 @@ export const enum MockType {
 export interface MockItem {
   type: MockType;
   pattern: string;
-  data: string;
+  data: string[];
   enabled: boolean;
   delay: number;
+  idx: number;
 }
 
 type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>;
