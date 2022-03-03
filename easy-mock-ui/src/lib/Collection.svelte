@@ -246,6 +246,9 @@
     if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       onSave();
+    } else if (event.key === 'e' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      newDialogVisible = true;
     }
   }}
 />
@@ -282,16 +285,22 @@
           <Card>(Experimental!) Turn on Zap mode will cache all JSON response from GET/POST requests.</Card>
         </div>
       </Popover>
-      <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
-      <Button
-        class="!rounded-none w-full"
-        on:click={() => {
-          newDialogVisible = true;
-        }}
-        rectangle
-      >
-        New
-      </Button>
+      <Popover position={PopoverPositions.RIGHT}>
+        <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
+        <div slot="popover-content"><Card>ctrl/cmd + s</Card></div>
+      </Popover>
+      <Popover position={PopoverPositions.RIGHT}>
+        <Button
+          class="!rounded-none w-full"
+          on:click={() => {
+            newDialogVisible = true;
+          }}
+          rectangle
+        >
+          New
+        </Button>
+        <div slot="popover-content"><Card>ctrl/cmd + e</Card></div>
+      </Popover>
     </div>
     <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col">
       <div>
