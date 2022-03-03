@@ -126,7 +126,7 @@ module.exports = (server, options) => {
 
         if (cache.has(key)) {
           const { body, headers, code } = cache.get(key);
-
+          res.setHeader('easy-mock-cache', '1');
           res.writeHead(code, headers);
           res.end(body);
           // console.log('return cache!', key);
