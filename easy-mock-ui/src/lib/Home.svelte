@@ -5,6 +5,7 @@
   import { createCollection, deleteCollection, getCollectionsBrief } from '../services';
   import type { CollectionBrief } from '../typings';
   import CollectionCard from './CollectionCard.svelte';
+  import { tick } from 'svelte';
 
   let briefs: CollectionBrief[] = [] as CollectionBrief[];
   let createDialogVisible = false;
@@ -14,13 +15,15 @@
 
   let toast;
 
-  $: if (!createDialogVisible) {
-    resetForm();
-  }
-
-  function resetForm() {
-    newCollectionId = '';
-    newCollectionTitle = '';
+  $: if (createDialogVisible) {
+    tick().then(() => {
+      document.getElementById('create-collection-title-input').focus();
+    });
+  } else {
+    tick().then(() => {
+      newCollectionId = '';
+      newCollectionTitle = '';
+    });
   }
 
   function showToast(msg: string, duration = 1500) {
@@ -79,6 +82,17 @@
   </style>
 </svelte:head>
 
+<svelte:window
+  on:keydown={async (event) => {
+    if (event.key === 'e' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      createDialogVisible = true;
+    } else if (event.key === 'Escape' && createDialogVisible) {
+      createDialogVisible = false;
+    }
+  }}
+/>
+
 <!-- {#await Promise.resolve()} -->
 {#await fetchCollectionsBrief()}
   <Loading />
@@ -104,6 +118,7 @@
     <Dialog title="Create New Collection" danger>
       <FormField name="Title" required>
         <TextField
+          id="create-collection-title-input"
           bind:value={newCollectionTitle}
           autofocus
           on:keydown={(e) => {
@@ -120,15 +135,7 @@
         />
       </FormField>
       <div class="flex justify-around">
-        <Button
-          on:click={() => {
-            newCollectionId = '';
-            newCollectionTitle = '';
-            closeModal();
-          }}
-        >
-          Cancel
-        </Button>
+        <Button on:click={closeModal}>Cancel</Button>
         <Button disabled={!newCollectionId || !newCollectionTitle} on:click={() => onCreateCollection(closeModal)}>
           Confirm
         </Button>

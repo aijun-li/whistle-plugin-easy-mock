@@ -21,6 +21,7 @@
   import { saveCollection, getCollection, updateZapStatus } from '../services';
   import { ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { PopoverPositions } from 'attractions/popover';
+  import { tick } from 'svelte';
 
   export let params = {} as { id: string };
 
@@ -59,6 +60,16 @@
   ];
 
   $: selectIDL = selectedType === MockType.IDL;
+
+  $: if (newDialogVisible) {
+    tick().then(() => {
+      document.getElementById('new-rule-input').focus();
+    });
+  } else {
+    tick().then(() => {
+      newRulePattern = '';
+    });
+  }
 
   async function fetchRemoteRules() {
     collection = await getCollection(id);
@@ -110,7 +121,6 @@
     } else {
       httpList = [newMockItem, ...httpList];
     }
-    newRulePattern = '';
     selectedItem = newMockItem;
     content = {
       text: newMockItem.data,
@@ -249,6 +259,8 @@
     } else if (event.key === 'e' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       newDialogVisible = true;
+    } else if (event.key === 'Escape' && newDialogVisible) {
+      newDialogVisible = false;
     }
   }}
 />
@@ -331,6 +343,7 @@
     <Dialog title={`Add New ${selectedType.toUpperCase()} Rule`} danger>
       <FormField name={selectIDL ? 'Service Method' : 'URL Path'} required>
         <TextField
+          id="new-rule-input"
           bind:value={newRulePattern}
           on:keydown={(e) => {
             if (e.detail.nativeEvent.code === 'Enter') {
@@ -341,14 +354,7 @@
         />
       </FormField>
       <div class="flex justify-around">
-        <Button
-          on:click={() => {
-            newRulePattern = '';
-            closeModal();
-          }}
-        >
-          Cancel
-        </Button>
+        <Button on:click={closeModal}>Cancel</Button>
         <Button disabled={!newRulePattern} on:click={() => onAddNewRule(closeModal)}>Confirm</Button>
       </div>
     </Dialog>
