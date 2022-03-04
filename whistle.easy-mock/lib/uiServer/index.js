@@ -31,12 +31,16 @@ function updateOldVersion(storage) {
   if (currentVersion < 0.4) {
     collections.forEach((collection) => {
       collection.rules.idl.forEach((item) => {
-        item.data = [item.data];
-        item.idx = 0;
+        if (!Array.isArray(item.data)) {
+          item.data = [item.data];
+          item.idx = 0;
+        }
       });
       collection.rules.http.forEach((item) => {
-        item.data = [item.data];
-        item.idx = 0;
+        if (!Array.isArray(item.data)) {
+          item.data = [item.data];
+          item.idx = 0;
+        }
       });
     });
 
