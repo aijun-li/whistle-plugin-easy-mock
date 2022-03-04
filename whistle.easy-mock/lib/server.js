@@ -48,19 +48,30 @@ module.exports = (server, options) => {
     }
 
     const { pathname, searchParams } = new URL(oReq.url);
+    const rawBody = await getBody(req);
+    let serviceMethod = searchParams.get('service_method');
 
-    const rawbody = await getBody(req);
-    let body = rawbody;
-
-    if (typeof body === 'string' && body.length > 0) {
-      try {
-        body = JSON.parse(body);
-      } catch {}
+    if (!serviceMethod && rawBody) {
+      const contentType = req.headers['content-type'].split(';')[0];
+      switch (contentType) {
+        case 'application/x-www-form-urlencoded':
+          serviceMethod = decodeURIComponent(
+            rawBody
+              .split('&')
+              .find((param) => param.startsWith('service_method'))
+              ?.split('=')?.[1],
+          );
+          break;
+        case 'application/json':
+          try {
+            serviceMethod = JSON.parse(rawBody).service_method;
+          } catch {}
+          break;
+      }
     }
 
-    const serviceMethod = searchParams.get('service_method') || body.service_method;
-
     const isIDL = Boolean(serviceMethod);
+
     const collections = options.storage.getProperty(LocalKey.Collections) ?? [];
     const collection = collections.find((c) => c.id === id);
 
@@ -123,14 +134,13 @@ module.exports = (server, options) => {
         }
 
         const cache = CacheMap.get(collection.id);
-        const key = generateCacheKey(oReq.url, oReq.method, rawbody);
+        const key = generateCacheKey(oReq.url, oReq.method, rawBody);
 
         if (cache.has(key)) {
           const { body, headers, code } = cache.get(key);
           res.setHeader('easy-mock-cache', '1');
           res.writeHead(code, headers);
           res.end(body);
-          // console.log('return cache!', key);
         } else {
           const client = req.request((svrRes) => {
             res.writeHead(svrRes.statusCode, svrRes.headers);
