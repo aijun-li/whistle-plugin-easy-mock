@@ -31,7 +31,7 @@
     />
   </div>
 
-  <Popover class="flex-1" popoverClass="delete-btn-popover" position={PopoverPositions.RIGHT}>
+  <Popover {...{ class: 'flex-1' }} popoverClass="delete-btn-popover" position={PopoverPositions.RIGHT}>
     <Button {selected} class="w-full" on:click={() => dispatch('click')}>
       <H3 class="w-full text-left px-1 !m-0">{item.pattern}</H3>
     </Button>
