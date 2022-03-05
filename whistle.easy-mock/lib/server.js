@@ -1,10 +1,11 @@
 const Mock = require('mockjs');
+const JSON5 = require('json5');
 const { LocalKey } = require('./const');
 
 const CacheMap = new Map();
 
 function resolveJSON(data) {
-  const obj = Mock.mock(JSON.parse(data));
+  const obj = Mock.mock(JSON5.parse(data));
   for (const key of Object.keys(obj)) {
     if (key.startsWith('$$') && key.length > 2) {
       const realKey = key.slice(2);
@@ -86,8 +87,11 @@ module.exports = (server, options) => {
     let resDelay = 0;
     let hasMatchRule = false;
 
+    let currentPattern = '';
     try {
       rules.some(({ pattern, data, enabled, delay, idx }) => {
+        currentPattern = pattern;
+
         // check if rule enabled
         if (!enabled) {
           return false;
@@ -111,7 +115,7 @@ module.exports = (server, options) => {
         return false;
       });
     } catch {
-      finalResponse = `Error: Rule with pattern '${pattern}' is invalid!`;
+      finalResponse = `Error: Rule with pattern '${currentPattern}' is invalid!`;
       console.error(finalResponse);
     }
 
@@ -120,6 +124,7 @@ module.exports = (server, options) => {
         await sleep(resDelay);
       }
       if (finalResponse) {
+        res.setHeader('easy-mock-type', 'mock');
         res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         res.end(finalResponse);
       } else {
@@ -138,7 +143,7 @@ module.exports = (server, options) => {
 
         if (cache.has(key)) {
           const { body, headers, code } = cache.get(key);
-          res.setHeader('easy-mock-cache', '1');
+          res.setHeader('easy-mock-type', 'cache');
           res.writeHead(code, headers);
           res.end(body);
         } else {

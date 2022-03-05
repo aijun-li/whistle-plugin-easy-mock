@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { JSONEditor } from 'svelte-jsoneditor';
   import {
     Button,
     Tab,
@@ -18,12 +17,15 @@
     H2,
   } from 'attractions';
   import { SnackbarPositions } from 'attractions/snackbar';
-  import { Collection, Content, MockItem, MockType } from '../typings';
+  import { Collection, MockItem, MockType } from '../typings';
   import MockCardList from './MockCardList.svelte';
   import { saveCollection, getCollection, updateZapStatus } from '../services';
   import { MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { PopoverPositions } from 'attractions/popover';
   import { tick } from 'svelte';
+  import Json5Editor, { formatJSON } from './Json5Editor.svelte';
+  import JSON5 from 'json5';
+  import { patch } from 'golden-fleece';
 
   export let params = {} as { id: string };
 
@@ -46,10 +48,9 @@
   let collection: Collection;
   let selectedType = MockType.IDL;
   let selectedItem: MockItem = { ...DefaultSelectedItem };
-  let content: Content = {
-    text: '',
-  };
-  let editor;
+
+  let editor: Json5Editor;
+
   let toast;
   let newRulePattern = '';
   let newDialogVisible = false;
@@ -91,18 +92,16 @@
       ...DefaultSelectedItem,
       type: event.detail.value,
     };
-    content = {
-      text: '',
-    };
+    editor.set('');
   }
 
-  function onItemSelect() {
-    content = {
-      text: selectedItem.data[selectedItem.idx],
-    };
+  async function onItemSelect() {
+    editor.set(selectedItem.data[selectedItem.idx]);
+    await tick();
+    editor.focus();
   }
 
-  function onAddNewRule(closeModal) {
+  async function onAddNewRule(closeModal) {
     const arr = selectIDL ? idlList : httpList;
     if (arr.some((item) => item.pattern === newRulePattern)) {
       showToast('Pattern already exists!');
@@ -122,15 +121,13 @@
       httpList = [newMockItem, ...httpList];
     }
     selectedItem = newMockItem;
-    content = {
-      text: DefaultData,
-    };
+    editor.set(DefaultData);
+    editor.moveCursorTo(0, 1);
 
     closeModal();
-    setTimeout(() => {
-      // editor.expand();
-      editor.focus();
-    }, 100);
+
+    await tick();
+    editor.focus();
   }
 
   async function onSave() {
@@ -148,12 +145,13 @@
       return;
     }
 
-    const snapshot = editor.get();
-    const arr = selectIDL ? [...idlList] : [...httpList];
-    const idx = arr.findIndex((item) => item.pattern === selectedItem.pattern);
-    const updateItem = arr.splice(idx, 1)[0];
-
     try {
+      editor.format();
+      const snapshot = editor.get();
+      const arr = selectIDL ? [...idlList] : [...httpList];
+      const idx = arr.findIndex((item) => item.pattern === selectedItem.pattern);
+      const updateItem = arr.splice(idx, 1)[0];
+
       updateItem.data[updateItem.idx] = validateJSON(snapshot);
 
       arr.splice(idx, 0, updateItem);
@@ -163,9 +161,8 @@
       } else {
         httpList = arr;
       }
-      content = {
-        text: updateItem.data[updateItem.idx],
-      };
+
+      editor.set(updateItem.data[updateItem.idx]);
 
       await saveCollection(id, {
         idl: idlList,
@@ -207,9 +204,9 @@
         ...DefaultSelectedItem,
         type: selectedType,
       };
-      content = {
-        text: '',
-      };
+
+      editor.set('');
+
       showToast('Deleted successfully!');
     } catch (e) {
       showToast(e.message);
@@ -226,9 +223,9 @@
     }
   }
 
-  function validateJSON(snapshot: Content) {
+  function validateJSON(snapshot: string) {
     try {
-      const json = snapshot.json ?? JSON.parse(snapshot.text);
+      const json = JSON5.parse(snapshot);
 
       for (const key of Object.keys(json)) {
         if (key === '') {
@@ -236,17 +233,17 @@
         }
         if (key.startsWith('$$$') && key.length > 3 && typeof json[key] === 'string') {
           try {
-            json[key.slice(1)] = JSON.parse(json[key]);
+            json[key.slice(1)] = JSON5.parse(json[key]);
             delete json[key];
           } catch (e) {
-            throw new Error(`Not a valid JSON string for '$$$' property!`);
+            throw new Error(`Invalid JSON string for '$$$' property!`);
           }
         }
       }
 
-      return JSON.stringify(json, null, 2);
+      return formatJSON(patch(snapshot, json));
     } catch (e) {
-      throw new Error('Invalid JSON format: ' + e.message);
+      throw new Error(e.message);
     }
   }
 
@@ -254,9 +251,9 @@
     const copyData = selectedItem.data[selectedItem.idx];
     selectedItem.data.push(copyData);
     selectedItem.idx = selectedItem.data.length - 1;
-    content = {
-      text: selectedItem.data[selectedItem.idx],
-    };
+
+    editor.set(selectedItem.data[selectedItem.idx]);
+
     await tick();
     onSave();
   }
@@ -268,9 +265,9 @@
     const currentIdx = selectedItem.idx;
     selectedItem.idx = currentIdx === selectedItem.data.length - 1 ? currentIdx - 1 : currentIdx;
     selectedItem.data.splice(currentIdx, 1);
-    content = {
-      text: selectedItem.data[selectedItem.idx],
-    };
+
+    editor.set(selectedItem.data[selectedItem.idx]);
+
     await tick();
     onSave();
   }
@@ -359,7 +356,9 @@
       </div>
     </div>
     <div class="flex-1 h-screen min-w-lg flex flex-col justify-start">
-      <JSONEditor bind:content bind:this={editor} mainMenuBar={true} onBlur={onSave} mode="code" />
+      <div class="flex-1 border-b">
+        <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />
+      </div>
       <div class="flex justify-between items-center p-2">
         <Button class="!p-2" round disabled={!hasSelectedRule} on:click={onCreateNewPage}>
           <PlusIcon size="2x" />
@@ -374,9 +373,9 @@
             on:change={async (event) => {
               const { value } = event.detail;
               selectedItem.idx = value - 1;
-              content = {
-                text: selectedItem.data[value - 1],
-              };
+
+              editor.set(selectedItem.data[value - 1]);
+
               await tick();
               onSave();
             }}
