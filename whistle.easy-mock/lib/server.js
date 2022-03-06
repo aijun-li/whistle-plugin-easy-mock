@@ -44,8 +44,8 @@ module.exports = (server, options) => {
 
     const id = parsedRules[0] || 'default';
     const host = parsedRules[1] || '';
-    if (host && req.setReqRules) {
-      req.setReqRules(`* ${host}`);
+    if (host) {
+      req.headers[options.config.REAL_HOST_HEADER] = host;
     }
 
     const { pathname, searchParams } = new URL(oReq.url);
