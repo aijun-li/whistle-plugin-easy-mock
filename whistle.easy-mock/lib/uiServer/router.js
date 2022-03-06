@@ -125,4 +125,11 @@ module.exports = (router) => {
       msg: '',
     };
   });
+
+  router.get(`${PREFIX}/hint`, (ctx) => {
+    const keyword = ctx.query.value;
+    const ids = (ctx.storage.getProperty(LocalKey.Collections) ?? []).map((collection) => collection.id);
+
+    ctx.body = ids.filter((id) => id.toLowerCase().includes(keyword.toLowerCase()));
+  });
 };

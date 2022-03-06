@@ -13,6 +13,10 @@
     "mock",
     "json5"
   ],
+  "whistleConfig": {
+    "hintUrl": "/api/hint",
+    "hideLongProtocol": true
+  },
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "json5": "^2.2.0",
