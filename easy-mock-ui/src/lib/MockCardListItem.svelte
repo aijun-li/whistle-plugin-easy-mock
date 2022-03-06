@@ -13,7 +13,7 @@
 </script>
 
 {#if !first}
-  <Divider class="!m-4" />
+  <Divider class="!my-4 !ml-1" />
 {/if}
 
 <div class="flex">

@@ -6,6 +6,7 @@
   import type { CollectionBrief } from '../typings';
   import CollectionCard from './CollectionCard.svelte';
   import { tick } from 'svelte';
+  import { Svrollbar } from 'svrollbar';
 
   let briefs: CollectionBrief[] = [] as CollectionBrief[];
   let createDialogVisible = false;
@@ -74,9 +75,15 @@
 </script>
 
 <svelte:head>
-  <style>
+  <style lang="scss">
     body {
       overflow-y: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      -ms-overflow-style: none;
+      min-width: 300px;
     }
   </style>
 </svelte:head>
@@ -96,7 +103,8 @@
 {#await fetchCollectionsBrief()}
   <Loading />
 {:then}
-  <div class="w-screen container">
+  <Svrollbar viewport={document.scrollingElement} contents={document.body} />
+  <div class="w-screen collections-container">
     {#each briefs as brief (brief.id)}
       <CollectionCard
         {brief}
@@ -150,6 +158,22 @@
 {/await}
 
 <style lang="scss">
+  @mixin responsive-grid-col($breakpoint, $count, $gap, $padding) {
+    @media screen and (max-width: $breakpoint) {
+      --collection-col-count: #{$count};
+      --collection-col-gap: #{$gap};
+      --collection-col-padding: #{$padding};
+    }
+  }
+
+  @mixin responsive-grid-row($breakpoint, $height, $gap, $padding) {
+    @media screen and (max-height: $breakpoint) {
+      --collection-row-height: #{$height};
+      --collection-row-gap: #{$gap};
+      --collection-row-padding: #{$padding};
+    }
+  }
+
   @mixin grid-gap-row($gap) {
     -webkit-row-gap: $gap;
     -moz-row-gap: $gap;
@@ -164,13 +188,28 @@
     column-gap: $gap;
   }
 
-  .container {
-    padding: 3vh 2vw;
-    display: grid;
-    grid-template-columns: repeat(6, 15vw);
-    grid-auto-rows: 30vh;
+  .collections-container {
+    --collection-col-count: 6;
+    --collection-col-gap: 1.2vw;
+    --collection-col-padding: 2vw;
 
-    @include grid-gap-row(2vh);
-    @include grid-gap-col(1.2vw);
+    --collection-row-height: 30vh;
+    --collection-row-gap: 3vh;
+    --collection-row-padding: 2vh;
+
+    @include responsive-grid-col(1024px, 5, 1.1vw, 1.6vw);
+    @include responsive-grid-col(768px, 4, 1vw, 1.5vw);
+    @include responsive-grid-col(640px, 3, 1vw, 1vw);
+    @include responsive-grid-col(400px, 2, 0.5vw, 0.5vw);
+
+    @include responsive-grid-row(500px, 47vh, 2vh, 2vh);
+
+    padding: var(--collection-row-padding) var(--collection-col-padding);
+    display: grid;
+    grid-template-columns: repeat(var(--collection-col-count), 1fr);
+    grid-auto-rows: var(--collection-row-height);
+
+    @include grid-gap-row(var(--collection-row-gap));
+    @include grid-gap-col(var(--collection-col-gap));
   }
 </style>
