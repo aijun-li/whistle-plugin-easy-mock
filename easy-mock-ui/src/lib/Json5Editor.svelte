@@ -155,3 +155,24 @@
     }
   }}
 />
+
+<style lang="scss">
+  :global {
+    #json-5-editor {
+      .ace_gutter {
+        background-color: #f5f2fb;
+        color: #4300b0;
+      }
+      .ace_gutter-active-line {
+        background-color: #e8e0f5;
+        color: #4300b0;
+      }
+      .ace_active-line {
+        background-color: rgba(245, 242, 251, 0.8);
+      }
+      .ace_cursor {
+        color: #4300b0;
+      }
+    }
+  }
+</style>
