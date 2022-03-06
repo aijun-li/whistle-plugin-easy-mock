@@ -7,6 +7,12 @@
     "type": "git",
     "url": "https://github.com/aijun-li/whistle-plugin-easy-mock"
   },
+  "keywords": [
+    "whistle",
+    "plugin",
+    "mock",
+    "json5"
+  ],
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "json5": "^2.2.0",
