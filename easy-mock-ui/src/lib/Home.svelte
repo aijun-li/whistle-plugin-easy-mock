@@ -55,7 +55,6 @@
         };
         await createCollection(newBrief);
         await fetchCollectionsBrief();
-        // briefs = [...briefs, newBrief];
         closeModal();
       } catch (e) {
         showToast(e.message);

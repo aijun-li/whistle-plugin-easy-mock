@@ -32,12 +32,12 @@
   </div>
 
   <Popover {...{ class: 'flex-1' }} popoverClass="delete-btn-popover" position={PopoverPositions.RIGHT}>
-    <Button {selected} class="w-full" on:click={() => dispatch('click')}>
+    <Button {selected} class="w-full" on:click>
       <H3 class="w-full text-left px-1 !m-0">{item.pattern}</H3>
     </Button>
     <div slot="popover-content">
       <div class="ml-2">
-        <DeleteIcon on:delete={() => dispatch('delete')} />
+        <DeleteIcon on:delete />
       </div>
     </div>
   </Popover>

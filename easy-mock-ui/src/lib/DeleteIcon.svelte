@@ -19,10 +19,10 @@
 </script>
 
 <div
-  class="cursor-pointer"
-  class:text-disabled={!willDelete}
-  class:text-danger={willDelete}
+  class="cursor-pointer p-0.5 text-light-50 rounded-1/2 flex justify-center items-center"
+  class:bg-attraction={!willDelete}
+  class:bg-red-600={willDelete}
   on:click={deleteWithConfirm}
 >
-  <XIcon size="1.1x" />
+  <XIcon size="1x" />
 </div>
