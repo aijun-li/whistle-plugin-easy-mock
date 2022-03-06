@@ -225,21 +225,19 @@
 
   function validateJSON(snapshot: string) {
     try {
-      const json = JSON5.parse(snapshot);
-
-      for (const key of Object.keys(json)) {
-        if (key === '') {
-          delete json[key];
-        }
-        if (key.startsWith('$$$') && key.length > 3 && typeof json[key] === 'string') {
+      const json = JSON5.parse(snapshot, function (key, value) {
+        if (key.startsWith('$$$') && key.length > 3 && typeof value === 'string') {
           try {
-            json[key.slice(1)] = JSON5.parse(json[key]);
-            delete json[key];
+            console.log(value, typeof value, this);
+            this[key.slice(1)] = JSON.parse(value);
+            return undefined;
           } catch (e) {
             throw new Error(`Invalid JSON string for '$$$' property!`);
           }
+        } else {
+          return value;
         }
-      }
+      });
 
       return formatJSON(patch(snapshot, json));
     } catch (e) {

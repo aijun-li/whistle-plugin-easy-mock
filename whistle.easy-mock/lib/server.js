@@ -6,14 +6,16 @@ const CacheMap = new Map();
 
 function resolveJSON(data) {
   const obj = Mock.mock(JSON5.parse(data));
-  for (const key of Object.keys(obj)) {
+  const jsonStr = JSON.stringify(obj);
+  const json = JSON.parse(jsonStr, function (key, value) {
     if (key.startsWith('$$') && key.length > 2) {
-      const realKey = key.slice(2);
-      obj[realKey] = JSON.stringify(obj[key]);
-      delete obj[key];
+      this[key.slice(2)] = JSON.stringify(value);
+      return undefined;
+    } else {
+      return value;
     }
-  }
-  return JSON.stringify(obj);
+  });
+  return JSON.stringify(json);
 }
 
 function sleep(num) {
