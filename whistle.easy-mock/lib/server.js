@@ -62,7 +62,7 @@ module.exports = (server, options) => {
             rawBody
               .split('&')
               .find((param) => param.startsWith('service_method'))
-              ?.split('=')?.[1],
+              ?.split('=')?.[1] ?? '',
           );
           break;
         case 'application/json':
