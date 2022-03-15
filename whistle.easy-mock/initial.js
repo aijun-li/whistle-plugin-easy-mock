@@ -10,8 +10,8 @@ function updateOldVersion(storage) {
       title: 'Default',
       id: 'default',
       rules: {
-        idl: oldIDL ?? [],
-        http: oldHTTP ?? [],
+        idl: typeof oldIDL === 'undefined' ? [] : oldIDL,
+        http: typeof oldHTTP === 'undefined' ? [] : oldHTTP,
       },
     };
     collections.unshift(defaultCollection);
