@@ -7,6 +7,7 @@
   import CollectionCard from './CollectionCard.svelte';
   import { tick } from 'svelte';
   import { Svrollbar } from 'svrollbar';
+  import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
 
   let briefs: CollectionBrief[] = [] as CollectionBrief[];
   let createDialogVisible = false;
@@ -67,6 +68,15 @@
     try {
       await deleteCollection(id);
       await fetchCollectionsBrief();
+
+      try {
+        const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LOCAL_DEFAULT_TYPE_KEY));
+        if (storedDefaultTypeMap?.[id]) {
+          delete storedDefaultTypeMap[id];
+          localStorage.setItem(LOCAL_DEFAULT_TYPE_KEY, JSON.stringify(storedDefaultTypeMap));
+        }
+      } catch {}
+
       showToast('Deleted successfully!');
     } catch (e) {
       showToast(e.message);

@@ -26,10 +26,9 @@
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
   import JSON5 from 'json5';
   import { patch } from 'golden-fleece';
+  import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
 
   export let params = {} as { id: string };
-
-  $: id = params.id;
 
   const DefaultData = '{}';
   const DefaultSelectedItem = {
@@ -46,7 +45,15 @@
   ];
 
   let collection: Collection;
-  let selectedType = MockType.IDL;
+  let selectedType = (function () {
+    try {
+      const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LOCAL_DEFAULT_TYPE_KEY) || '{}');
+      return storedDefaultTypeMap[params.id] || MockType.IDL;
+    } catch {
+      return MockType.IDL;
+    }
+  })();
+
   let selectedItem: MockItem = { ...DefaultSelectedItem };
 
   let editor: Json5Editor;
@@ -57,6 +64,8 @@
 
   let idlList: MockItem[] = [];
   let httpList: MockItem[] = [];
+
+  $: id = params.id;
 
   $: crumbItems = [
     { href: '/whistle.easy-mock', text: 'Collections' },
@@ -92,6 +101,13 @@
       ...DefaultSelectedItem,
       type: event.detail.value,
     };
+
+    try {
+      const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LOCAL_DEFAULT_TYPE_KEY) || '{}');
+      storedDefaultTypeMap[id] = event.detail.value;
+      localStorage.setItem(LOCAL_DEFAULT_TYPE_KEY, JSON.stringify(storedDefaultTypeMap));
+    } catch {}
+
     editor.set('');
   }
 
