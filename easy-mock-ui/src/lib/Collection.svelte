@@ -229,6 +229,23 @@
     }
   }
 
+  function onEdit(event) {
+    const { oldPattern, newPattern, type } = event.detail;
+    const list = type === MockType.IDL ? idlList : httpList;
+
+    const newIdx = list.findIndex((item) => item.pattern === newPattern);
+    if (newIdx !== -1) {
+      showToast('Pattern already exists!');
+      return;
+    }
+
+    const item = list.find((item) => item.pattern === oldPattern);
+    if (item) {
+      item.pattern = newPattern;
+      onSave();
+    }
+  }
+
   async function onToggleZap() {
     try {
       await updateZapStatus(collection.id, !collection.zap);
@@ -364,6 +381,7 @@
             bind:selectedItem
             on:select={onItemSelect}
             on:delete={onDelete}
+            on:edit={onEdit}
             on:toggle={onSave}
           />
         </div>

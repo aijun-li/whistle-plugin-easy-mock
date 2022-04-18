@@ -5,9 +5,12 @@
   import type { CollectionBrief } from 'src/typings';
   import DeleteIcon from './DeleteIcon.svelte';
   import { PopoverPositions } from 'attractions/popover';
+  import { createEventDispatcher } from 'svelte';
 
   export let brief: CollectionBrief = {} as CollectionBrief;
   export let empty = false;
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <Popover popoverClass="collection-delete-popover" position={PopoverPositions.TOP}>
@@ -23,7 +26,7 @@
   </Button>
   <div slot="popover-content">
     {#if !empty && brief.id !== 'default'}
-      <DeleteIcon on:delete />
+      <DeleteIcon on:click={() => dispatch('delete')} />
     {/if}
   </div>
 </Popover>

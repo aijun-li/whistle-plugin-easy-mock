@@ -21,6 +21,9 @@
     on:delete={() => {
       dispatch('delete', { pattern: item.pattern });
     }}
+    on:edit={(e) => {
+      dispatch('edit', { oldPattern: item.pattern, newPattern: e.detail, type: item.type });
+    }}
     on:toggle={() => {
       dispatch('toggle');
     }}

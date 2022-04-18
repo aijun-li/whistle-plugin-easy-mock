@@ -8,7 +8,7 @@
 
   function deleteWithConfirm() {
     if (willDelete) {
-      dispatch('delete');
+      dispatch('click');
     } else {
       willDelete = true;
       setTimeout(() => {
@@ -19,7 +19,7 @@
 </script>
 
 <div
-  class="cursor-pointer p-0.5 text-light-50 rounded-1/2 flex justify-center items-center"
+  class="cursor-pointer p-0.5 text-light-50 rounded-1/2 flex justify-center items-center w-20px h-20px"
   class:bg-attraction={!willDelete}
   class:bg-red-600={willDelete}
   on:click={deleteWithConfirm}

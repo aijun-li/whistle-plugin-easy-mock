@@ -1,15 +1,24 @@
 <script lang="ts">
-  import { Button, H3, Dot, Popover, Switch, Slider, Divider } from 'attractions';
+  import { Button, H3, Popover, Switch, Slider, Divider, TextField } from 'attractions';
   import { createEventDispatcher } from 'svelte';
   import { PopoverPositions } from 'attractions/popover';
   import type { MockItem } from 'src/typings';
   import DeleteIcon from './DeleteIcon.svelte';
+  import EditIcon from './EditIcon.svelte';
 
   export let item: MockItem;
   export let selected: boolean;
   export let first: boolean = false;
 
+  let inEdit = false;
+
   const dispatch = createEventDispatcher();
+
+  function handleEdit(e) {
+    console.log('edit!');
+    dispatch('edit', e.detail.value);
+    inEdit = false;
+  }
 </script>
 
 {#if !first}
@@ -32,13 +41,32 @@
   </div>
 
   <Popover {...{ class: 'flex-1' }} popoverClass="delete-btn-popover" position={PopoverPositions.RIGHT}>
-    <Button {selected} class="w-full" on:click>
-      <H3 class="w-full text-left px-1 !m-0">{item.pattern}</H3>
-    </Button>
+    {#if !inEdit}
+      <Button {selected} class="w-full" on:click>
+        <H3 class="w-full text-left px-1 !m-0">{item.pattern}</H3>
+      </Button>
+    {:else}
+      <TextField
+        class="!my-1.4"
+        value={item.pattern}
+        autofocus
+        outline
+        on:change={handleEdit}
+        on:blur={() => (inEdit = false)}
+        on:keydown={(e) => {
+          if (['Enter', 'Escape'].includes(e.detail.nativeEvent.code)) {
+            inEdit = false;
+          }
+        }}
+      />
+    {/if}
     <div slot="popover-content">
-      <div class="ml-2">
-        <DeleteIcon on:delete />
-      </div>
+      {#if !inEdit}
+        <div class="ml-2 flex flex-col justify-between">
+          <div><EditIcon on:click={() => (inEdit = true)} /></div>
+          <div class="mt-1"><DeleteIcon on:click={() => dispatch('delete')} /></div>
+        </div>
+      {/if}
     </div>
   </Popover>
 </div>
