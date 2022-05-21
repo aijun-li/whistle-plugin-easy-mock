@@ -27,6 +27,7 @@
   import { Collection, MockItem, MockType } from '../typings';
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
   import MockCardList from './MockCardList.svelte';
+  import { Svroller } from './Scrollbar';
 
   export let params = {} as { id: string };
 
@@ -64,6 +65,9 @@
 
   let idlList: MockItem[] = [];
   let httpList: MockItem[] = [];
+
+  let cardListViewport;
+  let cardListContent;
 
   $: id = params.id;
 
@@ -375,26 +379,26 @@
         <div slot="popover-content"><Card>ctrl/cmd + e</Card></div>
       </Popover>
     </div>
-    <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col">
+    <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col ">
       <div>
         <Breadcrumbs items={crumbItems} />
       </div>
       <H3 class="pl-12">
         {selectIDL ? 'Service Method' : 'URL Path'}</H3
       >
-      <div class="pt-5 flex-1 overflow-y-auto overflow-x-visible">
-        <div class="pr-15 pb-3">
-          <MockCardList
-            list={selectIDL ? idlList : httpList}
-            bind:selectedItem
-            on:select={onItemSelect}
-            on:delete={onDelete}
-            on:edit={onEdit}
-            on:toggle={onSave}
-          />
-        </div>
-      </div>
+
+      <Svroller wrapperClass="flex-1" viewportClass="pt-5 pr-15 pb-3" contentClass="pr-15 pb-3">
+        <MockCardList
+          list={selectIDL ? idlList : httpList}
+          bind:selectedItem
+          on:select={onItemSelect}
+          on:delete={onDelete}
+          on:edit={onEdit}
+          on:toggle={onSave}
+        />
+      </Svroller>
     </div>
+
     <div class="flex-1 h-screen min-w-lg flex flex-col justify-start">
       <div class="flex-1 border-b">
         <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />

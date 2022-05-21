@@ -5,7 +5,7 @@
   export let width = '100%';
   export let height = '100%';
 
-  export let hideAfter = 1000;
+  export let hideAfter = 200;
 
   /**
    * @type {boolean}
@@ -42,15 +42,17 @@
    */
   export let vThumbOut = (node) => fade(node, { duration: 300 });
 
-  export let horizontal = false;
+  export let wrapperClass = '';
+  export let contentClass = '';
+  export let viewportClass = '';
 
   let viewport;
   let contents;
 </script>
 
-<div class="svlr-wrapper" style="width: {width}; height: {height}">
-  <div bind:this={viewport} class="svlr-viewport" style="width: {width}; height: {height}">
-    <div bind:this={contents} class="svlr-contents">
+<div class={`svlr-wrapper ${wrapperClass}`} style="width: {width}; height: {height}">
+  <div bind:this={viewport} class={`svlr-viewport ${viewportClass}`} style="width: {width}; height: {height}">
+    <div bind:this={contents} class={`svlr-contents ${contentClass}`}>
       <slot />
     </div>
   </div>
@@ -65,7 +67,21 @@
     {vTrackOut}
     {vThumbIn}
     {vThumbOut}
-    {horizontal}
+    on:show
+    on:hide
+  />
+  <Svrollbar
+    {viewport}
+    {contents}
+    {hideAfter}
+    {alwaysVisible}
+    {initiallyVisible}
+    {margin}
+    {vTrackIn}
+    {vTrackOut}
+    {vThumbIn}
+    {vThumbOut}
+    horizontal
     on:show
     on:hide
   />
@@ -74,6 +90,7 @@
 <style>
   .svlr-wrapper {
     position: relative;
+    overflow: hidden;
   }
 
   .svlr-viewport {
