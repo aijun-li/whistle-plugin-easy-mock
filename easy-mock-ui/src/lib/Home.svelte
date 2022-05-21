@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Button, Dialog, FormField, Headline, Loading, Modal, SnackbarContainer, TextField } from 'attractions';
-  import { push } from 'svelte-spa-router';
   import { SnackbarPositions } from 'attractions/snackbar';
+  import { tick } from 'svelte';
+  import { push } from 'svelte-spa-router';
+  import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { createCollection, deleteCollection, getCollectionsBrief } from '../services';
   import type { CollectionBrief } from '../typings';
   import CollectionCard from './CollectionCard.svelte';
-  import { tick } from 'svelte';
-  import { Svrollbar } from 'svrollbar';
-  import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
+  import { Svrollbar } from './Scrollbar';
 
   let briefs: CollectionBrief[] = [] as CollectionBrief[];
   let createDialogVisible = false;

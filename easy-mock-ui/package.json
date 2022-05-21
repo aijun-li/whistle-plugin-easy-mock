@@ -33,6 +33,6 @@
     "prettier": "^2.5.1",
     "svelte-feather-icons": "^3.5.1",
     "svelte-spa-router": "^3.2.0",
-    "svrollbar": "^0.10.4"
+    "svrollbar": "^0.12.0"
   }
 }
