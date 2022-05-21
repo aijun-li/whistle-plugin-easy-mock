@@ -58,6 +58,7 @@
   let selectedItem: MockItem = { ...DefaultSelectedItem };
 
   let editor: Json5Editor;
+  let dataPageScroll;
 
   let toast;
 
@@ -138,6 +139,7 @@
     editor.set(selectedItem.data[selectedItem.idx].value);
     await tick();
     editor.focus();
+    dataPageScroll?.hScrollTo(document.querySelector('.page-button .btn.selected'), true);
   }
 
   async function onAddNewRule(closeModal) {
@@ -454,7 +456,12 @@
         {#if !hasSelectedRule}
           <H2 class="!m-0 select-rule-prompt">select a rule to operate</H2>
         {:else}
-          <Svroller wrapperClass="flex-1" contentClass="inline-flex justify-between items-center h-full px-1" wheel>
+          <Svroller
+            bind:this={dataPageScroll}
+            wrapperClass="flex-1"
+            contentClass="inline-flex items-center h-full pl-1"
+            wheel
+          >
             {#each selectedItem.data as page, index (index)}
               <div class="page-button">
                 <Button
@@ -462,7 +469,8 @@
                   selected={index === selectedItem.idx}
                   rectangle
                   small
-                  on:click={() => {
+                  on:click={(event) => {
+                    dataPageScroll?.hScrollTo(event.detail.nativeEvent.target, true);
                     if (index === selectedItem.idx) {
                       return;
                     }
@@ -483,6 +491,7 @@
                 </div>
               </div>
             {/each}
+            <div class="w-2" />
           </Svroller>
         {/if}
         <Button

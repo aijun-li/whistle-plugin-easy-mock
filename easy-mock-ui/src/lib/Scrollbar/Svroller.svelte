@@ -50,6 +50,11 @@
 
   let viewport;
   let contents;
+
+  let hScrollbar;
+  export const hScrollTo = (el, center) => {
+    hScrollbar?.hScrollTo(el, center);
+  };
 </script>
 
 <div class={`svlr-wrapper ${wrapperClass}`} style="width: {width}; height: {height}">
@@ -73,6 +78,7 @@
     on:hide
   />
   <Svrollbar
+    bind:this={hScrollbar}
     {viewport}
     {contents}
     {hideAfter}

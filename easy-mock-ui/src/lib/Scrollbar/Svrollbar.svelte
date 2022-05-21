@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+  import { spring } from 'svelte/motion';
   import { fade } from 'svelte/transition';
 
   /**
@@ -96,6 +97,8 @@
   let hovered = true;
   let pressed = false;
 
+  let hWheelUnsubscribe;
+
   $: teardownViewport = setupViewport(viewport);
   $: teardownContents = setupContents(contents);
   // $: teardownTrack = setupTrack(vTrack);
@@ -124,6 +127,27 @@
   $: scrollable = horizontal ? hScrollable : vScrollable;
 
   $: visible = scrollable && (hovered || pressed || alwaysVisible);
+
+  export function hScrollTo(el, center = false) {
+    if (!el || !viewport || !contents) return;
+
+    const { x: targetX, width: targetWidth } = el.getBoundingClientRect();
+    const { x: contentX } = contents.getBoundingClientRect();
+
+    const centerPosLeft = targetX - contentX - trackWidth / 2 + targetWidth / 2;
+    const startPosLeft = targetX - contentX;
+
+    const originalLeft = viewport.scrollLeft;
+    const finalLeft = center ? centerPosLeft : startPosLeft;
+
+    const sp = spring(originalLeft);
+
+    sp.subscribe((value) => {
+      viewport.scrollLeft = value;
+    });
+
+    sp.set(finalLeft);
+  }
 
   function setupViewport(viewport) {
     if (!viewport) return;
@@ -276,7 +300,18 @@
 
     e.stopPropagation();
 
-    viewport.scrollLeft += e.deltaY / 5;
+    const originalLeft = viewport.scrollLeft;
+    const finalLeft = viewport.scrollLeft + e.deltaY;
+
+    hWheelUnsubscribe?.();
+
+    const sp = spring(originalLeft);
+
+    hWheelUnsubscribe = sp.subscribe((value) => {
+      viewport.scrollLeft = value;
+    });
+
+    sp.set(finalLeft);
   }
 
   function onTrackOver() {
