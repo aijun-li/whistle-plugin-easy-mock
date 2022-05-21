@@ -591,7 +591,7 @@
 
     .page-button-edit-icon {
       @apply absolute top-0 right-0 hidden;
-      transform: translate(20%, -30%);
+      transform: translate(20%, -30%) scale(0.8);
     }
 
     &:hover > .page-button-edit-icon {
