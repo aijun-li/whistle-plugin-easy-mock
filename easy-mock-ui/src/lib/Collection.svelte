@@ -10,7 +10,6 @@
     Headline,
     Loading,
     Modal,
-    Pagination,
     Popover,
     SnackbarContainer,
     Tab,
@@ -25,17 +24,18 @@
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
   import { Collection, MockItem, MockType } from '../typings';
+  import EditIcon from './EditIcon.svelte';
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
   import MockCardList from './MockCardList.svelte';
   import { Svroller } from './Scrollbar';
 
   export let params = {} as { id: string };
 
-  const DefaultData = '{}';
+  const DefaultData = { label: 'default', value: '{}' };
   const DefaultSelectedItem = {
     type: MockType.IDL,
     pattern: '',
-    data: [''],
+    data: [],
     delay: 0,
     enabled: true,
     idx: 0,
@@ -60,14 +60,16 @@
   let editor: Json5Editor;
 
   let toast;
+
   let newRulePattern = '';
   let newDialogVisible = false;
 
+  let newDataPageLabel = '';
+  let editDataPageIndex = undefined;
+  let newDataPageVisible = false;
+
   let idlList: MockItem[] = [];
   let httpList: MockItem[] = [];
-
-  let cardListViewport;
-  let cardListContent;
 
   $: id = params.id;
 
@@ -80,6 +82,8 @@
 
   $: hasSelectedRule = Boolean(selectedItem.pattern);
 
+  $: isEditingDataPageLabel = typeof editDataPageIndex === 'number';
+
   $: if (newDialogVisible) {
     tick().then(() => {
       document.getElementById('new-rule-input').focus();
@@ -87,6 +91,21 @@
   } else {
     tick().then(() => {
       newRulePattern = '';
+    });
+  }
+
+  $: if (newDataPageVisible) {
+    tick().then(() => {
+      const input = document.getElementById('new-data-page-input') as HTMLInputElement;
+      input.focus();
+      if (typeof editDataPageIndex === 'number') {
+        input.select();
+      }
+    });
+  } else {
+    tick().then(() => {
+      newDataPageLabel = '';
+      editDataPageIndex = undefined;
     });
   }
 
@@ -116,7 +135,7 @@
   }
 
   async function onItemSelect() {
-    editor.set(selectedItem.data[selectedItem.idx]);
+    editor.set(selectedItem.data[selectedItem.idx].value);
     await tick();
     editor.focus();
   }
@@ -141,13 +160,14 @@
       httpList = [newMockItem, ...httpList];
     }
     selectedItem = newMockItem;
-    editor.set(DefaultData);
+    editor.set(DefaultData.value);
     editor.moveCursorTo(0, 1);
 
     closeModal();
 
     await tick();
     editor.focus();
+    onSave();
   }
 
   async function onSave() {
@@ -172,7 +192,7 @@
       const idx = arr.findIndex((item) => item.pattern === selectedItem.pattern);
       const updateItem = arr.splice(idx, 1)[0];
 
-      updateItem.data[updateItem.idx] = validateJSON(snapshot);
+      updateItem.data[updateItem.idx].value = validateJSON(snapshot);
 
       arr.splice(idx, 0, updateItem);
 
@@ -182,7 +202,7 @@
         httpList = arr;
       }
 
-      editor.set(updateItem.data[updateItem.idx]);
+      editor.set(updateItem.data[updateItem.idx].value);
 
       await saveCollection(id, {
         idl: idlList,
@@ -282,14 +302,21 @@
     }
   }
 
-  async function onCreateNewPage() {
-    const copyData = selectedItem.data[selectedItem.idx];
-    selectedItem.data.push(copyData);
-    selectedItem.idx = selectedItem.data.length - 1;
+  async function onCreateDataPage(closeModal) {
+    if (isEditingDataPageLabel) {
+      selectedItem.data[editDataPageIndex].label = newDataPageLabel || 'unnamed';
+    } else {
+      const copyData = selectedItem.data[selectedItem.idx].value;
+      selectedItem.data.push({ label: newDataPageLabel || 'unnamed', value: copyData });
+      selectedItem.idx = selectedItem.data.length - 1;
 
-    editor.set(selectedItem.data[selectedItem.idx]);
+      editor.set(selectedItem.data[selectedItem.idx].value);
+    }
+
+    closeModal();
 
     await tick();
+    editor.focus();
     onSave();
   }
 
@@ -301,7 +328,16 @@
     selectedItem.idx = currentIdx === selectedItem.data.length - 1 ? currentIdx - 1 : currentIdx;
     selectedItem.data.splice(currentIdx, 1);
 
-    editor.set(selectedItem.data[selectedItem.idx]);
+    editor.set(selectedItem.data[selectedItem.idx].value);
+
+    await tick();
+    onSave();
+  }
+
+  async function onDataPageChange(idx) {
+    selectedItem.idx = idx;
+
+    editor.set(selectedItem.data[idx].value);
 
     await tick();
     onSave();
@@ -316,8 +352,9 @@
     } else if (event.key === 'e' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       newDialogVisible = true;
-    } else if (event.key === 'Escape' && newDialogVisible) {
+    } else if (event.key === 'Escape' && (newDialogVisible || newDataPageVisible)) {
       newDialogVisible = false;
+      newDataPageVisible = false;
     }
   }}
 />
@@ -359,7 +396,7 @@
           {/if}
         </Button>
         <div slot="popover-content">
-          <Card>(Experimental!) Turn on Zap mode will cache all JSON response from GET/POST requests.</Card>
+          <Card>Turn on Zap mode will cache all JSON response from GET/POST requests.</Card>
         </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
@@ -403,30 +440,55 @@
       <div class="flex-1 border-b">
         <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />
       </div>
-      <div class="flex justify-between items-center p-2">
-        <Button class="!p-2" round disabled={!hasSelectedRule} on:click={onCreateNewPage}>
+      <div class="flex justify-between items-center px-1">
+        <Button
+          class={`!p-2 !my-2 ${hasSelectedRule ? '!cursor-pointer' : '!cursor-not-allowed'}`}
+          round
+          disabled={!hasSelectedRule}
+          on:click={() => {
+            newDataPageVisible = true;
+          }}
+        >
           <PlusIcon size="2x" />
         </Button>
         {#if !hasSelectedRule}
-          <H2 class="!m-0">select a rule to operate</H2>
+          <H2 class="!m-0 select-rule-prompt">select a rule to operate</H2>
         {:else}
-          <Pagination
-            class="!m-0"
-            pages={selectedItem.data.length}
-            currentPage={selectedItem.idx + 1}
-            on:change={async (event) => {
-              const { value } = event.detail;
-              selectedItem.idx = value - 1;
-
-              editor.set(selectedItem.data[value - 1]);
-
-              await tick();
-              onSave();
-            }}
-          />
+          <Svroller wrapperClass="flex-1" contentClass="inline-flex justify-between items-center h-full px-1" wheel>
+            {#each selectedItem.data as page, index (index)}
+              <div class="page-button">
+                <Button
+                  outline
+                  selected={index === selectedItem.idx}
+                  rectangle
+                  small
+                  on:click={() => {
+                    if (index === selectedItem.idx) {
+                      return;
+                    }
+                    onDataPageChange(index);
+                  }}
+                >
+                  {page.label}
+                </Button>
+                <div
+                  class="page-button-edit-icon"
+                  on:click={() => {
+                    newDataPageLabel = page.label;
+                    editDataPageIndex = index;
+                    newDataPageVisible = true;
+                  }}
+                >
+                  <EditIcon />
+                </div>
+              </div>
+            {/each}
+          </Svroller>
         {/if}
         <Button
-          class="!p-2"
+          class={`!p-2 !my-2 ${
+            !hasSelectedRule || selectedItem.data.length === 1 ? '!cursor-not-allowed' : '!cursor-pointer'
+          }`}
           round
           disabled={!hasSelectedRule || selectedItem.data.length === 1}
           on:click={onDeleteCurrentPage}
@@ -438,7 +500,7 @@
   </div>
 
   <!-- modal for adding new rule -->
-  <Modal bind:open={newDialogVisible} noClickaway let:closeCallback={closeModal}>
+  <Modal bind:open={newDialogVisible} let:closeCallback={closeModal}>
     <Dialog title={`Add New ${selectedType.toUpperCase()} Rule`} danger>
       <FormField name={selectIDL ? 'Service Method' : 'URL Path'} required>
         <TextField
@@ -455,6 +517,29 @@
       <div class="flex justify-around">
         <Button on:click={closeModal}>Cancel</Button>
         <Button disabled={!newRulePattern} on:click={() => onAddNewRule(closeModal)}>Confirm</Button>
+      </div>
+    </Dialog>
+  </Modal>
+
+  <!-- modal for adding new data page -->
+  <Modal bind:open={newDataPageVisible} let:closeCallback={closeModal}>
+    <Dialog title={isEditingDataPageLabel ? 'Edit Mock Data Label' : 'Add New Mock Data'} danger>
+      <FormField name="Label">
+        <TextField
+          id="new-data-page-input"
+          placeholder="unnamed"
+          bind:value={newDataPageLabel}
+          on:keydown={(e) => {
+            if (e.detail.nativeEvent.code === 'Enter') {
+              onCreateDataPage(closeModal);
+            }
+          }}
+          autofocus
+        />
+      </FormField>
+      <div class="flex justify-around">
+        <Button on:click={closeModal}>Cancel</Button>
+        <Button on:click={() => onCreateDataPage(closeModal)}>Confirm</Button>
       </div>
     </Dialog>
   </Modal>
@@ -481,6 +566,27 @@
           margin: 3em;
         }
       }
+    }
+
+    .popover {
+      z-index: 2;
+    }
+
+    .select-rule-prompt {
+      color: #888888 !important;
+    }
+  }
+
+  .page-button {
+    @apply relative not-first:ml-1 flex-none;
+
+    .page-button-edit-icon {
+      @apply absolute top-0 right-0 hidden;
+      transform: translate(20%, -30%);
+    }
+
+    &:hover > .page-button-edit-icon {
+      @apply block;
     }
   }
 </style>

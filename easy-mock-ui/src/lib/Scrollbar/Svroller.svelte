@@ -46,6 +46,8 @@
   export let contentClass = '';
   export let viewportClass = '';
 
+  export let wheel = false;
+
   let viewport;
   let contents;
 </script>
@@ -81,6 +83,7 @@
     {vTrackOut}
     {vThumbIn}
     {vThumbOut}
+    {wheel}
     horizontal
     on:show
     on:hide

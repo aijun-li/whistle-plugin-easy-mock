@@ -41,6 +41,28 @@ function updateOldVersion(storage) {
     storage.setProperty(LocalKey.Version, 0.4);
     currentVersion = 0.4;
   }
+
+  // support lable for multi-page
+  if (currentVersion < 0.5) {
+    collections.forEach((collection) => {
+      collection.rules.idl.forEach((item) => {
+        item.data = item.data.map((data, index) => ({
+          label: `${index}`,
+          value: data,
+        }));
+      });
+      collection.rules.http.forEach((item) => {
+        item.data = item.data.map((data, index) => ({
+          label: `${index}`,
+          value: data,
+        }));
+      });
+    });
+
+    storage.setProperty(LocalKey.Collections, collections);
+    storage.setProperty(LocalKey.Version, 0.5);
+    currentVersion = 0.5;
+  }
 }
 
 module.exports = (options) => {

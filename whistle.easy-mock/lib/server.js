@@ -99,7 +99,7 @@ module.exports = (server, options) => {
           return false;
         }
 
-        const json = data[idx];
+        const json = data[idx].value;
         // check if match rules
         if ((isIDL && serviceMethod === pattern) || (!isIDL && pathname.includes(pattern))) {
           resDelay = delay * 1000;
@@ -116,9 +116,9 @@ module.exports = (server, options) => {
 
         return false;
       });
-    } catch {
+    } catch (error) {
       finalResponse = `Error: Rule with pattern '${currentPattern}' is invalid!`;
-      console.error(finalResponse);
+      console.error(finalResponse, error);
     }
 
     if (hasMatchRule) {

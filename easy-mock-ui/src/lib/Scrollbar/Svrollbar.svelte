@@ -74,6 +74,7 @@
   export let vThumbOut = (node) => fade(node, { duration: 300 });
 
   export let horizontal = false;
+  export let wheel = false;
 
   /**
    * @event show
@@ -83,6 +84,7 @@
 
   let vTrack;
   let vThumb;
+  let vScrollbar;
 
   let startTop = 0;
   let startY = 0;
@@ -92,10 +94,12 @@
   let windowScrollEnabled = false;
   let interacted = false;
   let hovered = true;
+  let pressed = false;
 
   $: teardownViewport = setupViewport(viewport);
   $: teardownContents = setupContents(contents);
   // $: teardownTrack = setupTrack(vTrack);
+  $: teardownScrollbar = setupScrollbar(vScrollbar);
   $: teardownThumb = setupThumb(vThumb);
 
   $: marginTop = margin.top ?? 0;
@@ -115,8 +119,11 @@
   $: thumbWidth = wholeWidth > 0 ? (trackWidth / wholeWidth) * trackWidth : 0;
   $: thumbLeft = wholeWidth > 0 ? (scrollLeft / wholeWidth) * trackWidth : 0;
 
-  $: scrollable = horizontal ? wholeWidth > trackWidth : wholeHeight > trackHeight;
-  $: visible = scrollable && (hovered || alwaysVisible);
+  $: vScrollable = wholeHeight > trackHeight;
+  $: hScrollable = wholeWidth > trackWidth;
+  $: scrollable = horizontal ? hScrollable : vScrollable;
+
+  $: visible = scrollable && (hovered || pressed || alwaysVisible);
 
   function setupViewport(viewport) {
     if (!viewport) return;
@@ -137,6 +144,10 @@
     element.addEventListener('mouseover', onViewportOver, true);
     element.addEventListener('mouseout', onViewportOut, true);
 
+    if (horizontal && wheel) {
+      element.addEventListener('wheel', onWheelScroll, { passive: true });
+    }
+
     const observer = new ResizeObserver((entries) => {
       for (const _entry of entries) {
         if (!horizontal) {
@@ -155,8 +166,23 @@
       element.removeEventListener('scroll', onScroll);
       element.removeEventListener('mouseover', onViewportOver, true);
       element.removeEventListener('mouseout', onViewportOut, true);
+      element.removeEventListener('wheel', onWheelScroll);
       observer.unobserve(viewport);
       observer.disconnect();
+    };
+  }
+
+  function setupScrollbar(scrollbar) {
+    if (!scrollbar) return;
+
+    teardownScrollbar?.();
+
+    vScrollbar.addEventListener('mouseover', onViewportOver, true);
+    vScrollbar.addEventListener('mouseout', onViewportOut, true);
+
+    return () => {
+      vScrollbar.removeEventListener('mouseover', onViewportOver, true);
+      vScrollbar.removeEventListener('mouseout', onViewportOut, true);
     };
   }
 
@@ -230,7 +256,6 @@
 
   function onScroll() {
     if (!scrollable) return;
-
     // clearTimer();
     // setupTimer();
 
@@ -244,6 +269,14 @@
     interacted = true;
 
     dispatch('show');
+  }
+
+  function onWheelScroll(e) {
+    if (!horizontal || !wheel || vScrollable || !hScrollable) return;
+
+    e.stopPropagation();
+
+    viewport.scrollLeft += e.deltaY / 5;
   }
 
   function onTrackOver() {
@@ -268,6 +301,8 @@
   function onThumbDown(event) {
     event.stopPropagation();
     event.preventDefault();
+
+    pressed = true;
 
     if (!horizontal) {
       startTop = viewport.scrollTop;
@@ -303,6 +338,8 @@
   function onThumbUp(event) {
     event.stopPropagation();
     event.preventDefault();
+
+    pressed = false;
 
     if (!horizontal) {
       startTop = 0;
@@ -349,6 +386,7 @@
     </div>
   {:else}
     <div
+      bind:this={vScrollbar}
       class="v-scrollbar horizontal"
       class:fixed={windowScrollEnabled}
       style="width: {trackWidth}px; margin: {marginTop}px {marginRight}px {marginBottom}px {marginLeft}px"

@@ -3,10 +3,15 @@ export const enum MockType {
   HTTP = 'http',
 }
 
+export interface MockItemData {
+  label: string;
+  value: string;
+}
+
 export interface MockItem {
   type: MockType;
   pattern: string;
-  data: string[];
+  data: MockItemData[];
   enabled: boolean;
   delay: number;
   idx: number;
