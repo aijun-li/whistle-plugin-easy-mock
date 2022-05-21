@@ -1,32 +1,32 @@
 <script lang="ts">
   import {
-    Button,
-    Tab,
-    Dialog,
-    Modal,
-    FormField,
-    TextField,
-    SnackbarContainer,
-    H3,
-    Loading,
-    Headline,
     Breadcrumbs,
-    Popover,
+    Button,
     Card,
-    Pagination,
+    Dialog,
+    FormField,
     H2,
+    H3,
+    Headline,
+    Loading,
+    Modal,
+    Pagination,
+    Popover,
+    SnackbarContainer,
+    Tab,
+    TextField,
   } from 'attractions';
-  import { SnackbarPositions } from 'attractions/snackbar';
-  import { Collection, MockItem, MockType } from '../typings';
-  import MockCardList from './MockCardList.svelte';
-  import { saveCollection, getCollection, updateZapStatus } from '../services';
-  import { MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { PopoverPositions } from 'attractions/popover';
-  import { tick } from 'svelte';
-  import Json5Editor, { formatJSON } from './Json5Editor.svelte';
-  import JSON5 from 'json5';
+  import { SnackbarPositions } from 'attractions/snackbar';
   import { patch } from 'golden-fleece';
+  import JSON5 from 'json5';
+  import { tick } from 'svelte';
+  import { MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
+  import { getCollection, saveCollection, updateZapStatus } from '../services';
+  import { Collection, MockItem, MockType } from '../typings';
+  import Json5Editor, { formatJSON } from './Json5Editor.svelte';
+  import MockCardList from './MockCardList.svelte';
 
   export let params = {} as { id: string };
 
@@ -317,6 +317,14 @@
     }
   }}
 />
+
+<svelte:head>
+  <style lang="scss">
+    body {
+      overflow-y: hidden;
+    }
+  </style>
+</svelte:head>
 
 <!-- {#await Promise.resolve()} -->
 {#await fetchRemoteRules()}

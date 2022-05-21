@@ -84,20 +84,6 @@
   }
 </script>
 
-<svelte:head>
-  <style lang="scss">
-    body {
-      overflow-y: auto;
-      scrollbar-width: none;
-      &::-webkit-scrollbar {
-        display: none;
-      }
-      -ms-overflow-style: none;
-      min-width: 300px;
-    }
-  </style>
-</svelte:head>
-
 <svelte:window
   on:keydown={async (event) => {
     if (event.key === 'e' && (event.metaKey || event.ctrlKey)) {
