@@ -152,7 +152,7 @@
     const newMockItem = {
       type: selectedType,
       pattern: newRulePattern,
-      data: [DefaultData],
+      data: [{ ...DefaultData }],
       delay: 0,
       enabled: true,
       idx: 0,
@@ -169,8 +169,9 @@
     closeModal();
 
     await tick();
-    editor.focus();
     onSave();
+
+    setTimeout(editor.focus, 100);
   }
 
   async function onSave() {
@@ -319,8 +320,9 @@
     closeModal();
 
     await tick();
-    editor.focus();
     onSave();
+
+    setTimeout(editor.focus, 100);
   }
 
   async function onDeleteCurrentPage() {
@@ -393,7 +395,7 @@
       <Popover position={PopoverPositions.RIGHT}>
         <Button class="!rounded-none flex justify-center w-full" rectangle on:click={onToggleZap}>
           {#if collection.zap}
-            <ZapIcon size="1.5x" />
+            <ZapIcon size="1.5x" class="fill-orange-300" />
           {:else}
             <ZapOffIcon size="1.5x" />
           {/if}
@@ -484,12 +486,7 @@
         {#if !hasSelectedRule}
           <H2 class="!m-0 select-rule-prompt">select a rule to operate</H2>
         {:else}
-          <Svroller
-            bind:this={dataPageScroll}
-            wrapperClass="flex-1"
-            contentClass="inline-flex items-center h-full pl-1"
-            wheel
-          >
+          <Svroller bind:this={dataPageScroll} wrapperClass="flex-1" contentClass="flex items-center h-full pl-1" wheel>
             {#each selectedItem.data as page, index (index)}
               <div class="page-button">
                 <Button
@@ -519,7 +516,7 @@
                 </div>
               </div>
             {/each}
-            <div class="w-2" />
+            <div class="w-1">&nbsp;</div>
           </Svroller>
         {/if}
         <Button
