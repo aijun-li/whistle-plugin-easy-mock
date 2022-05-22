@@ -42,7 +42,7 @@
     idx: 0,
   };
   const tabs = [
-    { label: 'IDL', value: MockType.IDL },
+    { label: 'RPC', value: MockType.IDL },
     { label: 'HTTP', value: MockType.HTTP },
   ];
 

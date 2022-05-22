@@ -1,5 +1,5 @@
 export const enum MockType {
-  IDL = 'idl',
+  IDL = 'rpc', // TODO: should rename to rpc
   HTTP = 'http',
 }
 
