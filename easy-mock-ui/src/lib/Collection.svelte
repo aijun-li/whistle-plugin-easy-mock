@@ -486,7 +486,7 @@
         {#if !hasSelectedRule}
           <H2 class="!m-0 select-rule-prompt">select a rule to operate</H2>
         {:else}
-          <Svroller bind:this={dataPageScroll} wrapperClass="flex-1" contentClass="flex items-center h-full pl-1" wheel>
+          <Svroller bind:this={dataPageScroll} wrapperClass="flex-1" contentClass="flex items-center h-full pl-1">
             {#each selectedItem.data as page, index (index)}
               <div class="page-button">
                 <Button
