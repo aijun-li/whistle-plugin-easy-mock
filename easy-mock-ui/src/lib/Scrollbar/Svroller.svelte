@@ -13,11 +13,6 @@
   export let alwaysVisible = false;
 
   /**
-   * @type {boolean}
-   */
-  export let initiallyVisible = false;
-
-  /**
    * margin (px) from viewport top, right, bottom and left.
    *
    * @type {{ top?: number, right?: number, buttom?: number, left?: number }}
@@ -68,7 +63,6 @@
     {contents}
     {hideAfter}
     {alwaysVisible}
-    {initiallyVisible}
     {margin}
     {vTrackIn}
     {vTrackOut}
@@ -83,7 +77,6 @@
     {contents}
     {hideAfter}
     {alwaysVisible}
-    {initiallyVisible}
     {margin}
     {vTrackIn}
     {vTrackOut}

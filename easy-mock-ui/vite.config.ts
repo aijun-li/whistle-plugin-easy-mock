@@ -6,7 +6,7 @@ import WindiCSS from 'vite-plugin-windicss';
 const pwaOptions: Partial<Options> = {
   strategies: 'generateSW',
   registerType: 'autoUpdate',
-  injectRegister: 'inline',
+  injectRegister: 'auto',
   includeAssets: ['favicon.ico', 'robots.txt'],
   manifest: {
     name: 'Easy Mock',

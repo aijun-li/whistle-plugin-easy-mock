@@ -32,15 +32,6 @@
   export let alwaysVisible = false;
 
   /**
-   * make scrollbar initially visible if the content is scrollable.
-   *
-   * after you interact with your scrollable contents, scrollbar fallback to the default visibility behavior.
-   *
-   * @type {boolean}
-   */
-  export let initiallyVisible = false;
-
-  /**
    * margin (px) from viewport top, right, bottom and left.
    *
    * @type {{ top?: number, right?: number, bottom?: number, left?: number }}
