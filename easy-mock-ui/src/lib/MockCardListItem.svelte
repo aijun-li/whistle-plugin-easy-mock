@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Button, H3, Popover, Switch, Slider, Divider, TextField } from 'attractions';
-  import { createEventDispatcher } from 'svelte';
+  import { Button, Divider, H3, Popover, Slider, Switch, TextField } from 'attractions';
   import { PopoverPositions } from 'attractions/popover';
   import type { MockItem } from 'src/typings';
+  import { createEventDispatcher } from 'svelte';
   import DeleteIcon from './DeleteIcon.svelte';
   import EditIcon from './EditIcon.svelte';
 
@@ -47,7 +47,8 @@
       </Button>
     {:else}
       <TextField
-        class="!my-1.4"
+        class="!my-0 outline-none"
+        inputClass="!text-[1.3rem] !font-medium !px-[1.1em] !h-[2.6em]"
         value={item.pattern}
         autofocus
         outline
