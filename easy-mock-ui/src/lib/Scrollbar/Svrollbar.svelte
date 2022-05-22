@@ -228,8 +228,8 @@
 
     teardownThumb?.();
 
-    vThumb.addEventListener('mousedown', onThumbDown, { passive: false });
-    vThumb.addEventListener('touchstart', onThumbDown, { passive: false });
+    vThumb.addEventListener('mousedown', onThumbDown, { passive: true });
+    vThumb.addEventListener('touchstart', onThumbDown, { passive: true });
 
     return () => {
       vThumb.removeEventListener('mousedown', onThumbDown);
@@ -335,7 +335,6 @@
 
   function onThumbDown(event) {
     event.stopPropagation();
-    event.preventDefault();
 
     pressed = true;
 
@@ -347,15 +346,14 @@
       startX = event.changedTouches ? event.changedTouches[0].clientX : event.clientX;
     }
 
-    document.addEventListener('mousemove', onThumbMove);
-    document.addEventListener('touchmove', onThumbMove);
-    document.addEventListener('mouseup', onThumbUp);
-    document.addEventListener('touchend', onThumbUp);
+    document.addEventListener('mousemove', onThumbMove, { passive: true });
+    document.addEventListener('touchmove', onThumbMove, { passive: true });
+    document.addEventListener('mouseup', onThumbUp, { passive: true });
+    document.addEventListener('touchend', onThumbUp, { passive: true });
   }
 
   function onThumbMove(event) {
     event.stopPropagation();
-    event.preventDefault();
 
     if (!horizontal) {
       const clientY = event.changedTouches ? event.changedTouches[0].clientY : event.clientY;
@@ -372,7 +370,6 @@
 
   function onThumbUp(event) {
     event.stopPropagation();
-    event.preventDefault();
 
     pressed = false;
 

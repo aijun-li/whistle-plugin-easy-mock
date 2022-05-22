@@ -8,6 +8,7 @@
     H2,
     H3,
     Headline,
+    Label,
     Loading,
     Modal,
     Popover,
@@ -20,7 +21,7 @@
   import { patch } from 'golden-fleece';
   import JSON5 from 'json5';
   import { tick } from 'svelte';
-  import { MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
+  import { ChevronLeftIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
   import { Collection, MockItem, MockType } from '../typings';
@@ -374,7 +375,7 @@
   <Loading />
 {:then}
   <div class="flex">
-    <div class="w-fit h-screen border-r flex flex-col justify-between">
+    <div class={`w-fit h-screen border-r flex flex-col justify-between ${hasSelectedRule ? '<sm:hidden' : ''}`}>
       <div>
         {#each tabs as tab (tab.label)}
           <Tab
@@ -418,7 +419,11 @@
         <div slot="popover-content"><Card>ctrl/cmd + e</Card></div>
       </Popover>
     </div>
-    <div class="w-1/2 h-screen border-r pt-5 pl-5 flex flex-col ">
+    <div
+      class={`w-1/2 min-w-sm h-screen pt-5 pl-5 flex flex-col sm:border-r <sm:flex-1 ${
+        hasSelectedRule ? '<sm:hidden' : ''
+      }`}
+    >
       <div>
         <Breadcrumbs items={crumbItems} />
       </div>
@@ -438,7 +443,30 @@
       </Svroller>
     </div>
 
-    <div class="flex-1 h-screen min-w-lg flex flex-col justify-start">
+    <div
+      class={`flex-1 h-screen min-w-md <sm:min-w-sm flex flex-col justify-start ${hasSelectedRule ? '' : '<sm:hidden'}`}
+    >
+      <div class="flex-none flex border-b items-center justify-between sm:hidden">
+        <Button
+          class="!rounded-none"
+          small
+          round
+          on:click={() => {
+            selectedItem = {
+              ...DefaultSelectedItem,
+              type: selectedType,
+            };
+          }}
+        >
+          <ChevronLeftIcon size="1.5x" />
+          <Label>{selectedItem.type.toUpperCase()}</Label>
+        </Button>
+        <H3 class="!m-0 !mx-2 text-attraction truncate">{selectedItem.pattern}</H3>
+        <Button class="!rounded-none invisible" small round>
+          <ChevronLeftIcon size="1.5x" />
+          <Label>{selectedItem.type.toUpperCase()}</Label>
+        </Button>
+      </div>
       <div class="flex-1 border-b">
         <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />
       </div>

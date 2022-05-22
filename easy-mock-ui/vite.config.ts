@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
+import { Options, VitePWA } from 'vite-plugin-pwa';
 import WindiCSS from 'vite-plugin-windicss';
-import { VitePWA } from 'vite-plugin-pwa';
-import { Options } from 'vite-plugin-pwa';
 
 const pwaOptions: Partial<Options> = {
   strategies: 'generateSW',
@@ -46,5 +45,5 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: '../whistle.easy-mock/public',
   },
-  base: '/whistle.easy-mock',
+  base: '/whistle.easy-mock/',
 });
