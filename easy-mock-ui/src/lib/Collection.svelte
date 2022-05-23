@@ -581,7 +581,7 @@
   <!-- Toast -->
   <SnackbarContainer bind:this={toast} position={SnackbarPositions.TOP_MIDDLE} />
 {:catch}
-  <Headline class="flex justify-center items-center w-screen h-screen">
+  <Headline class="flex justify-center items-center w-screen h-screen text-center">
     Failed to fetch rule list! Please refresh!
   </Headline>
 {/await}
