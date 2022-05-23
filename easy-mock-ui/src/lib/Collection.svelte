@@ -21,7 +21,7 @@
   import { patch } from 'golden-fleece';
   import JSON5 from 'json5';
   import { onDestroy, tick } from 'svelte';
-  import { ChevronLeftIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
+  import { ChevronLeftIcon, DollarSignIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { fade } from 'svelte/transition';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
@@ -31,6 +31,7 @@
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
   import MockCardList from './MockCardList.svelte';
   import { Svroller } from './Scrollbar';
+  import VariablesPanel from './VariablesPanel.svelte';
 
   export let params = {} as { id: string };
 
@@ -69,6 +70,8 @@
   let newDataPageLabel = '';
   let editDataPageIndex = undefined;
   let newDataPageVisible = false;
+
+  let variablesVisible = false;
 
   let idlList: MockItem[] = [];
   let httpList: MockItem[] = [];
@@ -426,7 +429,20 @@
         </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
-        <Button class="!rounded-none w-full !px-3" selected={false} on:click={onSave} rectangle>Save</Button>
+        <Button
+          class="!rounded-none w-full justify-center"
+          selected={false}
+          rectangle
+          on:click={() => {
+            variablesVisible = true;
+          }}
+        >
+          <DollarSignIcon size="1.5x" />
+        </Button>
+        <div slot="popover-content"><Card>Open Variables panel</Card></div>
+      </Popover>
+      <Popover position={PopoverPositions.RIGHT}>
+        <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
         <div slot="popover-content"><Card>ctrl/cmd + s</Card></div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
@@ -598,6 +614,8 @@
       </div>
     </Dialog>
   </Modal>
+
+  <VariablesPanel bind:visible={variablesVisible} />
 
   <!-- Toast -->
   <SnackbarContainer bind:this={toast} position={SnackbarPositions.TOP_MIDDLE} />

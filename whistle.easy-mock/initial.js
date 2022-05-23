@@ -76,6 +76,17 @@ function updateOldVersion(storage) {
     storage.setProperty(LocalKey.Version, 0.7);
     currentVersion = 0.7;
   }
+
+  // support variables
+  if (currentVersion < 0.8) {
+    collections.forEach((collection) => {
+      collection.variables = [];
+    });
+
+    storage.setProperty(LocalKey.Collections, collections);
+    storage.setProperty(LocalKey.Version, 0.8);
+    currentVersion = 0.8;
+  }
 }
 
 module.exports = (options) => {

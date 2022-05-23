@@ -24,6 +24,11 @@ export interface Rules {
   http: MockItem[];
 }
 
+export interface Variable {
+  name: string;
+  value: string;
+}
+
 export interface CollectionBrief {
   title: string;
   id: string;
@@ -32,4 +37,5 @@ export interface CollectionBrief {
 export interface Collection extends CollectionBrief {
   rules: Rules;
   zap: boolean;
+  variables: Variable[];
 }
