@@ -15,7 +15,6 @@
   const dispatch = createEventDispatcher();
 
   function handleEdit(e) {
-    console.log('edit!');
     dispatch('edit', e.detail.value);
     inEdit = false;
   }
@@ -29,7 +28,6 @@
   <Switch class="mx-3" bind:value={item.enabled} on:change={() => dispatch('toggle')} />
   <div class="self-stretch mr-8 ml-1">
     <Slider
-      class=""
       bind:value={item.delay}
       min={0}
       max={15}
@@ -37,6 +35,9 @@
       tooltips="active"
       vertical
       ticks={{ mode: 'steps', step: 5, subDensity: 20 / 3 }}
+      on:blur={() => {
+        dispatch('delay-change');
+      }}
     />
   </div>
 

@@ -46,4 +46,9 @@ export default defineConfig({
     outDir: '../whistle.easy-mock/public',
   },
   base: '/whistle.easy-mock/',
+  server: {
+    hmr: {
+      host: 'localhost',
+    },
+  },
 });

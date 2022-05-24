@@ -441,6 +441,7 @@
           on:delete={onDelete}
           on:edit={onEdit}
           on:toggle={onSave}
+          on:delay-change={onSave}
         />
       </Svroller>
     </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MockItem } from 'src/typings';
-  import MockCardListItem from './MockCardListItem.svelte';
   import { createEventDispatcher } from 'svelte';
+  import MockCardListItem from './MockCardListItem.svelte';
 
   export let list: MockItem[];
   export let selectedItem: MockItem;
@@ -24,8 +24,7 @@
     on:edit={(e) => {
       dispatch('edit', { oldPattern: item.pattern, newPattern: e.detail, type: item.type });
     }}
-    on:toggle={() => {
-      dispatch('toggle');
-    }}
+    on:toggle
+    on:delay-change
   />
 {/each}
