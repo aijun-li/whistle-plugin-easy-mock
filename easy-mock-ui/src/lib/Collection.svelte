@@ -399,7 +399,7 @@
       </div>
       <div class="flex-1" />
       <Popover position={PopoverPositions.RIGHT}>
-        <Button class="!rounded-none flex justify-center w-full" rectangle on:click={onToggleZap}>
+        <Button class="!rounded-none flex justify-center w-full !px-3" rectangle on:click={onToggleZap}>
           {#if collection.zap}
             <ZapIcon size="1.5x" class="fill-orange-300" />
           {:else}
@@ -411,12 +411,12 @@
         </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
-        <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
+        <Button class="!rounded-none w-full !px-3" selected={false} on:click={onSave} rectangle>Save</Button>
         <div slot="popover-content"><Card>ctrl/cmd + s</Card></div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
         <Button
-          class="!rounded-none w-full"
+          class="!rounded-none w-full !px-3"
           on:click={() => {
             newDialogVisible = true;
           }}
