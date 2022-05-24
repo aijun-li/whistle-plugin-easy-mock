@@ -3,6 +3,7 @@
   import { SnackbarPositions } from 'attractions/snackbar';
   import { tick } from 'svelte';
   import { push } from 'svelte-spa-router';
+  import { fade } from 'svelte/transition';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { createCollection, deleteCollection, getCollectionsBrief } from '../services';
   import type { CollectionBrief } from '../typings';
@@ -15,8 +16,6 @@
   let newCollectionTitle = '';
   let newCollectionId = '';
 
-  let toast;
-
   $: if (createDialogVisible) {
     tick().then(() => {
       document.getElementById('create-collection-title-input').focus();
@@ -28,8 +27,15 @@
     });
   }
 
+  let toast;
+  let lastToastCloseCallback;
   function showToast(msg: string, duration = 1500) {
-    toast.showSnackbar({ props: { text: msg }, duration });
+    lastToastCloseCallback?.();
+    const { close } = toast?.showSnackbar({
+      props: { text: msg, transitionOptions: { duration: 200 }, transition: fade },
+      duration,
+    });
+    lastToastCloseCallback = close;
   }
 
   async function fetchCollectionsBrief() {
@@ -58,6 +64,7 @@
         await createCollection(newBrief);
         await fetchCollectionsBrief();
         closeModal();
+        showToast('Collection created!');
       } catch (e) {
         showToast(e.message);
       }
@@ -77,7 +84,7 @@
         }
       } catch {}
 
-      showToast('Deleted successfully!');
+      showToast('Collection deleted!');
     } catch (e) {
       showToast(e.message);
     }

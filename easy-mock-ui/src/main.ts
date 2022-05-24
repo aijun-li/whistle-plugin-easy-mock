@@ -1,7 +1,7 @@
 import { registerSW } from 'virtual:pwa-register';
 import 'virtual:windi.css';
 import App from './App.svelte';
-import './global.css';
+import './global.scss';
 
 registerSW({ immediate: true });
 

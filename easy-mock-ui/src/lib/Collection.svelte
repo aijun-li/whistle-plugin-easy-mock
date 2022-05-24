@@ -22,6 +22,7 @@
   import JSON5 from 'json5';
   import { tick } from 'svelte';
   import { ChevronLeftIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
+  import { fade } from 'svelte/transition';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
   import { Collection, MockItem, MockType } from '../typings';
@@ -60,8 +61,6 @@
 
   let editor: Json5Editor;
   let dataPageScroll;
-
-  let toast;
 
   let newRulePattern = '';
   let newDialogVisible = false;
@@ -117,8 +116,15 @@
     httpList = collection.rules.http ?? [];
   }
 
+  let toast;
+  let lastToastCloseCallback;
   function showToast(msg: string, duration = 1500) {
-    toast.showSnackbar({ props: { text: msg }, duration });
+    lastToastCloseCallback?.();
+    const { close } = toast?.showSnackbar({
+      props: { text: msg, transitionOptions: { duration: 200 }, transition: fade },
+      duration,
+    });
+    lastToastCloseCallback = close;
   }
 
   function onTabChange(event) {
@@ -182,7 +188,7 @@
           idl: idlList,
           http: httpList,
         });
-        showToast('Saved successfully!');
+        showToast('Saved!');
       } catch (e) {
         showToast(e.message);
       }
@@ -213,7 +219,7 @@
         http: httpList,
       });
 
-      showToast('Saved successfully!');
+      showToast('Saved!');
     } catch (e) {
       showToast(e.message);
     }
