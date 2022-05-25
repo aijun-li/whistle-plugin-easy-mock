@@ -479,10 +479,9 @@
       <div class="flex-1 border-b">
         <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />
       </div>
-      <div class="flex justify-between items-center px-1">
+      <div class="flex justify-between items-center">
         <Button
-          class={`!p-2 !my-2 ${hasSelectedRule ? '!cursor-pointer' : '!cursor-not-allowed'}`}
-          round
+          class={`!p-3 !py-4 !rounded-none ${hasSelectedRule ? '!cursor-pointer' : '!cursor-not-allowed'}`}
           disabled={!hasSelectedRule}
           on:click={() => {
             newDataPageVisible = true;
@@ -527,7 +526,7 @@
           </Svroller>
         {/if}
         <Button
-          class={`!p-2 !my-2 ${
+          class={`!p-3 !py-4 !rounded-none ${
             !hasSelectedRule || selectedItem.data.length === 1 ? '!cursor-not-allowed' : '!cursor-pointer'
           }`}
           round
