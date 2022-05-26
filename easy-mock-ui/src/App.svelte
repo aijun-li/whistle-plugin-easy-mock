@@ -2,10 +2,12 @@
   import Router from 'svelte-spa-router';
   import Collection from './lib/Collection.svelte';
   import Home from './lib/Home.svelte';
+  import MonacoEditor from './lib/MonacoEditor.svelte';
   import Svrollbar from './lib/Scrollbar/Svrollbar.svelte';
 
   const routes = {
-    '/': Home,
+    '/': MonacoEditor,
+    // '/': Home,
     '/collection/:id': Collection,
   };
 </script>
