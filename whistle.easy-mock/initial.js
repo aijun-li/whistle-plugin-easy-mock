@@ -63,6 +63,19 @@ function updateOldVersion(storage) {
     storage.setProperty(LocalKey.Version, 0.5);
     currentVersion = 0.5;
   }
+
+  // change type word 'idl' to 'rpc'
+  if (currentVersion < 0.7) {
+    collections.forEach((collection) => {
+      collection.rules.idl.forEach((item) => {
+        item.type = 'rpc';
+      });
+    });
+
+    storage.setProperty(LocalKey.Collections, collections);
+    storage.setProperty(LocalKey.Version, 0.7);
+    currentVersion = 0.7;
+  }
 }
 
 module.exports = (options) => {
