@@ -1,6 +1,14 @@
 const PREFIX = '/api';
 const { LocalKey } = require('../const');
 
+function broadcastChange(wsServer, data) {
+  wsServer.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify(data));
+    }
+  });
+}
+
 module.exports = (router) => {
   router.get(`${PREFIX}/collection`, (ctx) => {
     const collections = ctx.storage.getProperty(LocalKey.Collections)?.map(({ title, id }) => ({
@@ -93,6 +101,14 @@ module.exports = (router) => {
       code: 0,
       msg: '',
     };
+
+    if (ctx.headers['easy-mock-broadcast']) {
+      broadcastChange(ctx.wsServer, {
+        type: 'update',
+        id: ctx.params.id,
+        origin: ctx.headers.origin,
+      });
+    }
   });
 
   router.put(`${PREFIX}/collection/:id/zap`, (ctx) => {

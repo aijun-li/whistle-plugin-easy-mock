@@ -6,7 +6,7 @@ const serve = require('koa-static');
 const path = require('path');
 const router = require('koa-router')();
 const setupRouter = require('./router');
-
+const WebSocketServer = require('ws').Server;
 const MAX_AGE = 1000 * 60 * 5;
 
 module.exports = (server, options) => {
@@ -21,6 +21,8 @@ module.exports = (server, options) => {
   app.proxy = true;
   app.silent = true;
   app.context.storage = options.storage;
+  app.context.wsServer = new WebSocketServer({ server });
+
   onerror(app);
   setupRouter(router);
   app.use(bodyParser());

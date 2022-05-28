@@ -1,5 +1,4 @@
-import type { Collection } from './../typings/index';
-import type { CollectionBrief, Rules } from '../typings';
+import type { Collection, CollectionBrief, Rules } from '../typings';
 
 const PREFIX = '/whistle.easy-mock/api';
 

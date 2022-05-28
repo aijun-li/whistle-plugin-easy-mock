@@ -20,11 +20,12 @@
   import { SnackbarPositions } from 'attractions/snackbar';
   import { patch } from 'golden-fleece';
   import JSON5 from 'json5';
-  import { tick } from 'svelte';
+  import { onDestroy, tick } from 'svelte';
   import { ChevronLeftIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
   import { fade } from 'svelte/transition';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
+  import { setupWebSocket } from '../services/websocket';
   import { Collection, MockItem, MockType } from '../typings';
   import EditIcon from './EditIcon.svelte';
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
@@ -80,6 +81,7 @@
   ];
 
   $: selectIDL = selectedType === MockType.IDL;
+  $: selectedList = selectIDL ? idlList : httpList;
 
   $: hasSelectedRule = Boolean(selectedItem.pattern);
 
@@ -150,7 +152,7 @@
   }
 
   async function onAddNewRule(closeModal) {
-    const arr = selectIDL ? idlList : httpList;
+    const arr = selectedList;
     if (arr.some((item) => item.pattern === newRulePattern)) {
       showToast('Pattern already exists!');
       return;
@@ -198,7 +200,7 @@
     try {
       editor.format();
       const snapshot = editor.get();
-      const arr = selectIDL ? [...idlList] : [...httpList];
+      const arr = [...selectedList];
       const idx = arr.findIndex((item) => item.pattern === selectedItem.pattern);
       const updateItem = arr.splice(idx, 1)[0];
 
@@ -227,7 +229,7 @@
 
   async function onDelete(event) {
     const { pattern } = event.detail;
-    const arr = selectIDL ? [...idlList] : [...httpList];
+    const arr = [...selectedList];
     const idx = arr.findIndex((item) => item.pattern === pattern);
 
     try {
@@ -353,6 +355,19 @@
     await tick();
     onSave();
   }
+
+  const closeWebSocket = setupWebSocket(params.id, async (data) => {
+    if (data.type === 'update') {
+      await fetchRemoteRules();
+      await tick();
+      if (hasSelectedRule) {
+        selectedItem = selectedList.find((item) => item.pattern === selectedItem.pattern);
+      }
+    }
+  });
+  onDestroy(() => {
+    closeWebSocket();
+  });
 </script>
 
 <svelte:window
@@ -441,7 +456,7 @@
 
       <Svroller wrapperClass="flex-1" viewportClass="pt-5 pr-15 pb-3" contentClass="pr-15 pb-3">
         <MockCardList
-          list={selectIDL ? idlList : httpList}
+          list={selectedList}
           bind:selectedItem
           on:select={onItemSelect}
           on:delete={onDelete}
