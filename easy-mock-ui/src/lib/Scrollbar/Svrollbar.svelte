@@ -221,10 +221,14 @@
 
     vThumb.addEventListener('mousedown', onThumbDown, { passive: true });
     vThumb.addEventListener('touchstart', onThumbDown, { passive: true });
+    vThumb.addEventListener('mouseover', onThumbOver, { passive: true });
+    vThumb.addEventListener('mouseout', onThumbOut, { passive: true });
 
     return () => {
       vThumb.removeEventListener('mousedown', onThumbDown);
       vThumb.removeEventListener('touchstart', onThumbDown);
+      vThumb.removeEventListener('mouseover', onThumbOver);
+      vThumb.removeEventListener('mouseout', onThumbOut);
     };
   }
 
@@ -320,6 +324,16 @@
   }
 
   function onViewportOut() {
+    clearTimer();
+    setupTimer();
+  }
+
+  function onThumbOver() {
+    hovered = true;
+    clearTimer();
+  }
+
+  function onThumbOut() {
     clearTimer();
     setupTimer();
   }
