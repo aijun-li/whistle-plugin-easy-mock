@@ -2,7 +2,7 @@ export function setupWebSocket(id: string, cb: (data: any) => void) {
   const ws = new WebSocket(`ws://${location.host}${location.pathname}`);
 
   ws.onopen = () => {
-    console.log(`[WebSocket] Start listening change for collection#${id}`, event);
+    console.log(`[WebSocket] Start listening change for collection#${id}`);
   };
 
   ws.onmessage = (event) => {
