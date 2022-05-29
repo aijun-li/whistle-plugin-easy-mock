@@ -430,7 +430,7 @@
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
         <Button
-          class="!rounded-none w-full justify-center"
+          class="!rounded-none w-full !px-3 justify-center"
           selected={false}
           rectangle
           on:click={() => {
@@ -442,12 +442,14 @@
         <div slot="popover-content"><Card>Open Variables panel</Card></div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
-        <Button class="!rounded-none w-full" selected={false} on:click={onSave} rectangle>Save</Button>
+        <Button class="!rounded-none w-full !px-3 justify-center" selected={false} on:click={onSave} rectangle>
+          Save
+        </Button>
         <div slot="popover-content"><Card>ctrl/cmd + s</Card></div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
         <Button
-          class="!rounded-none w-full !px-3"
+          class="!rounded-none w-full !px-3 justify-center"
           on:click={() => {
             newDialogVisible = true;
           }}
@@ -508,7 +510,7 @@
         </Button>
       </div>
       <div class="flex-1 border-b">
-        <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />
+        <Json5Editor bind:this={editor} readOnly={!hasSelectedRule} on:blur={onSave} on:save={onSave} />
       </div>
       <div class="flex justify-between items-center">
         <Button

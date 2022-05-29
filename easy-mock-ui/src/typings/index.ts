@@ -39,3 +39,10 @@ export interface Collection extends CollectionBrief {
   zap: boolean;
   variables: Variable[];
 }
+
+export const enum VariableStatus {
+  Valid = 0,
+  NameCharInvalid = 1, // contain charaters other than \w
+  NameEndsInvalid = 2, // starts/ends with _
+  ValueInvalid = 3, // value is not a valid JSON value
+}

@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { Dialog, Divider, Modal, TextField } from 'attractions';
-  import { DollarSignIcon } from 'svelte-feather-icons';
-  import type { Variable } from '../typings';
+  import { Card, Dialog, Divider, Modal, Popover, TextField } from 'attractions';
+  import { PopoverPositions } from 'attractions/popover';
+  import { HelpCircleIcon } from 'svelte-feather-icons';
   import { Svroller } from '../lib/Scrollbar';
-  import DeleteIcon from './DeleteIcon.svelte';
+  import type { Variable } from '../typings';
+  import VariableItem from './VariableItem.svelte';
 
   export let visible = false;
   export let variables = [
@@ -23,9 +24,6 @@
     { name: 'y', value: '2' },
     { name: 'z', value: '3' },
   ] as Variable[];
-
-  let errorIndex;
-  let errorMsg;
 </script>
 
 <Modal bind:open={visible} let:closeCallback>
@@ -36,38 +34,58 @@
     {closeCallback}
   >
     <svelte:fragment slot="title-icon">
-      <DollarSignIcon size="1x" />
+      <Popover
+        popoverClass="!left-0 !bottom-[-5px] !transform !translate-x-[-2rem] !translate-y-full"
+        position={PopoverPositions.BOTTOM}
+      >
+        <div class="flex cursor-help">
+          <HelpCircleIcon size="1x" />
+        </div>
+        <Card class="w-90vw" slot="popover-content">
+          <div class="text-sm text-black">
+            <div>Variable-Name:</div>
+            <ul class="list-disc list-inside">
+              <li>case insensitive</li>
+              <li>only contain word characters, i.e. [0-9a-zA-Z_]</li>
+              <li>not begin/end with an underscore</li>
+            </ul>
+            <br />
+            <div>Variable-Value:</div>
+            <ul class="list-disc list-inside">
+              <li>valid JSON value, e.g. string should be wrapped with quotes</li>
+            </ul>
+            <br />
+            <div>
+              Use Variable 'VAR' in editor as '<span class="px-[1px]">_</span><span class="px-[1px]">_</span>VAR<span
+                class="px-[1px]">_</span
+              ><span class="px-[1px]">_</span>'
+            </div>
+          </div>
+        </Card>
+      </Popover>
     </svelte:fragment>
 
     <div class="flex items-center justify-center pb-1">
       <TextField class="flex-grow-[1]" placeholder="name" />
-      <span class="text-2xl font-bold mx-2">=</span>
+      <span class="text-2xl font-bold mx-0.5">=</span>
       <TextField class="flex-grow-[3]" placeholder="value" />
     </div>
 
     <Divider class="!my-4" />
 
-    <Svroller wrapperClass="flex-1 pr-[12px] mr-[-12px]" width="auto">
+    <Svroller
+      wrapperClass="flex-1 pr-[12px] mr-[-12px] pl-[2em] ml-[-2em]"
+      viewportClass="pl-[2em] ml-[-2em]"
+      contentClass=""
+      width="auto"
+    >
       {#each variables as variable, index (index)}
-        <div class="flex items-center justify-center pb-1 not-first:mt-4 relative">
-          <TextField
-            bind:value={variable.name}
-            class="flex-grow-[1] relative"
-            errorClass="absolute bottom-0 left-0 transform translate-y-full truncate w-full"
-            placeholder="name"
-            on:change={(e) => {
-              console.log(e.detail.value);
-              console.log(variables);
-              errorIndex = index;
-              errorMsg = 'test error';
-            }}
-            error={errorIndex === index && errorMsg}
-          />
-          <span class="text-2xl font-bold mx-2">=</span>
-          <TextField bind:value={variable.value} class="flex-grow-[3]" placeholder="value" />
-          <!-- <DeleteIcon /> -->
-        </div>
+        <VariableItem bind:variable />
       {/each}
     </Svroller>
   </Dialog>
+
+  <Modal>
+    <Dialog />
+  </Modal>
 </Modal>
