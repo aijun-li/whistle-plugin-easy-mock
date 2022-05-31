@@ -6,8 +6,8 @@ function updateOldVersion(storage) {
 
   // init collections
   if (collections.length === 0 || collections[0].id !== 'default') {
-    const oldIDL = ctx.storage.getProperty('idl');
-    const oldHTTP = ctx.storage.getProperty('http');
+    const oldIDL = storage.getProperty('idl');
+    const oldHTTP = storage.getProperty('http');
     const defaultCollection = {
       title: 'Default',
       id: 'default',
