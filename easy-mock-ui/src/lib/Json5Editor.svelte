@@ -9,14 +9,14 @@
 
 <script lang="ts">
   import ace, { Ace } from 'ace-builds';
-  import 'ace-builds/src-min-noconflict/mode-json5';
-  import 'ace-builds/src-min-noconflict/ext-searchbox';
   import { showErrorMarker } from 'ace-builds/src-min-noconflict/ext-error_marker';
-  import { onMount, tick } from 'svelte';
-  import { createEventDispatcher } from 'svelte';
+  import 'ace-builds/src-min-noconflict/ext-searchbox';
+  import 'ace-builds/src-min-noconflict/mode-json5';
+  import JSON5 from 'json5';
   import prettier from 'prettier';
   import jsonParser from 'prettier/esm/parser-babel.mjs';
-  import JSON5 from 'json5';
+  import { createEventDispatcher, onMount, tick } from 'svelte';
+  import { LocalKey } from '../typings';
 
   export let readOnly = false;
 
@@ -34,7 +34,7 @@
   onMount(() => {
     editor = ace.edit('json-5-editor', {
       mode: 'ace/mode/json5',
-      fontSize: 15,
+      fontSize: Number(localStorage.getItem(LocalKey.editorFontSize)) || 15,
       wrap: true,
       showPrintMargin: false,
       newLineMode: 'unix',
@@ -77,6 +77,7 @@
           const oldFontSize = Number(editor.getFontSize());
           if (oldFontSize > 12) {
             editor.setFontSize((oldFontSize - 1) as unknown as string);
+            localStorage.setItem(LocalKey.editorFontSize, `${oldFontSize - 1}`);
           }
         },
       },
@@ -87,6 +88,7 @@
           const oldFontSize = Number(editor.getFontSize());
           if (oldFontSize < 30) {
             editor.setFontSize((oldFontSize + 1) as unknown as string);
+            localStorage.setItem(LocalKey.editorFontSize, `${oldFontSize + 1}`);
           }
         },
       },

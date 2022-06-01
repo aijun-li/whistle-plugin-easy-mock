@@ -20,10 +20,9 @@
   import JSON5 from 'json5';
   import { getContext, onDestroy, tick } from 'svelte';
   import { ChevronLeftIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
-  import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
   import { setupWebSocket } from '../services/websocket';
-  import { Collection, ContextKey, MockItem, MockType, ShowToast } from '../typings';
+  import { Collection, ContextKey, LocalKey, MockItem, MockType, ShowToast } from '../typings';
   import EditIcon from './EditIcon.svelte';
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
   import MockCardList from './MockCardList.svelte';
@@ -50,7 +49,7 @@
   let collection: Collection;
   let selectedType = (function () {
     try {
-      const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LOCAL_DEFAULT_TYPE_KEY) || '{}');
+      const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LocalKey.defaultType) || '{}');
       return storedDefaultTypeMap[params.id] || MockType.IDL;
     } catch {
       return MockType.IDL;
@@ -124,9 +123,9 @@
     };
 
     try {
-      const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LOCAL_DEFAULT_TYPE_KEY) || '{}');
+      const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LocalKey.defaultType) || '{}');
       storedDefaultTypeMap[id] = event.detail.value;
-      localStorage.setItem(LOCAL_DEFAULT_TYPE_KEY, JSON.stringify(storedDefaultTypeMap));
+      localStorage.setItem(LocalKey.defaultType, JSON.stringify(storedDefaultTypeMap));
     } catch {}
 
     editor.set('');

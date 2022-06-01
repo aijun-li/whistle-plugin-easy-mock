@@ -34,6 +34,11 @@ export interface Collection extends CollectionBrief {
   zap: boolean;
 }
 
+export const enum LocalKey {
+  defaultType = 'default_type',
+  editorFontSize = 'editor_font_size',
+}
+
 export const enum ContextKey {
   toast = 'toast',
 }

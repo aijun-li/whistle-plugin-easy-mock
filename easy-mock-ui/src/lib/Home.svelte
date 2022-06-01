@@ -2,9 +2,8 @@
   import { Button, Dialog, FormField, Headline, Loading, Modal, TextField } from 'attractions';
   import { getContext, tick } from 'svelte';
   import { push } from 'svelte-spa-router';
-  import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { createCollection, deleteCollection, getCollectionsBrief } from '../services';
-  import { CollectionBrief, ContextKey, ShowToast } from '../typings';
+  import { CollectionBrief, ContextKey, LocalKey, ShowToast } from '../typings';
   import CollectionCard from './CollectionCard.svelte';
   import { Svrollbar } from './Scrollbar';
 
@@ -66,10 +65,10 @@
       await fetchCollectionsBrief();
 
       try {
-        const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LOCAL_DEFAULT_TYPE_KEY));
+        const storedDefaultTypeMap = JSON.parse(localStorage.getItem(LocalKey.defaultType));
         if (storedDefaultTypeMap?.[id]) {
           delete storedDefaultTypeMap[id];
-          localStorage.setItem(LOCAL_DEFAULT_TYPE_KEY, JSON.stringify(storedDefaultTypeMap));
+          localStorage.setItem(LocalKey.defaultType, JSON.stringify(storedDefaultTypeMap));
         }
       } catch {}
 
