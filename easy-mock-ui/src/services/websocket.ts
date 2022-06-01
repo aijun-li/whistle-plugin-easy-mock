@@ -1,25 +1,35 @@
 export function setupWebSocket(id: string, cb: (data: any) => void) {
-  const ws = new WebSocket(`ws://${location.host}${location.pathname}`);
+  let ws: WebSocket;
 
-  ws.onopen = () => {
-    console.log(`[WebSocket] Start listening change for collection#${id}`);
-  };
+  function _setup() {
+    ws = new WebSocket(`ws://${location.host}${location.pathname}`);
 
-  ws.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (data.id === id) {
-        console.log(`[WebSocket] Received message: ${event.data}`);
-        cb(data);
+    ws.onopen = () => {
+      console.log(`[WebSocket] Start listening change for collection#${id}`);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.id === id) {
+          console.log(`[WebSocket] Received message: ${event.data}`);
+          cb(data);
+        }
+      } catch {}
+    };
+
+    ws.onclose = (event) => {
+      console.log(`[WebSocket] Stop listening change for collection#${id}`, event);
+      if (event.code !== 3333) {
+        console.log(`[WebSocket] Closed accidentally! Restarting...`);
+        _setup();
       }
-    } catch {}
-  };
+    };
+  }
 
-  ws.onclose = () => {
-    console.log(`[WebSocket] Stop listening change for collection#${id}`, event);
-  };
+  _setup();
 
   return () => {
-    ws.close();
+    ws.close(3333, 'closed manually');
   };
 }
