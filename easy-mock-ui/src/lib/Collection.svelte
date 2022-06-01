@@ -2,7 +2,7 @@
   import {
     Breadcrumbs,
     Button,
-    Card,
+    Chip,
     Dialog,
     FormField,
     H2,
@@ -29,6 +29,8 @@
   import { Svroller } from './Scrollbar';
 
   export let params = {} as { id: string };
+
+  const isMacOS = navigator.platform.toLowerCase().startsWith('mac');
 
   const DefaultData = { label: 'default', value: '{}' };
   const DefaultSelectedItem = {
@@ -359,10 +361,11 @@
 
 <svelte:window
   on:keydown={(event) => {
-    if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
+    const modifierKey = isMacOS ? event.metaKey : event.ctrlKey;
+    if (event.key === 's' && modifierKey) {
       event.preventDefault();
       onSave();
-    } else if (event.key === 'e' && (event.metaKey || event.ctrlKey)) {
+    } else if (event.key === 'e' && modifierKey) {
       event.preventDefault();
       newDialogVisible = true;
     } else if (event.key === 'Escape' && (newDialogVisible || newDataPageVisible)) {
@@ -409,12 +412,16 @@
           {/if}
         </Button>
         <div slot="popover-content">
-          <Card>Turn on Zap mode will cache all JSON response from GET/POST requests.</Card>
+          <Chip small class="w-max max-w-50vw"
+            >Turn on Zap mode will cache all JSON response from GET/POST requests.</Chip
+          >
         </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
         <Button class="!rounded-none w-full !px-3" selected={false} on:click={onSave} rectangle>Save</Button>
-        <div slot="popover-content"><Card>ctrl/cmd + s</Card></div>
+        <div slot="popover-content">
+          <Chip small class="w-max">{`${isMacOS ? 'CMD' : 'CTRL'} + S`}</Chip>
+        </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
         <Button
@@ -426,7 +433,9 @@
         >
           New
         </Button>
-        <div slot="popover-content"><Card>ctrl/cmd + e</Card></div>
+        <div slot="popover-content">
+          <Chip small class="w-max">{`${isMacOS ? 'CMD' : 'CTRL'} + E`}</Chip>
+        </div>
       </Popover>
     </div>
     <div
