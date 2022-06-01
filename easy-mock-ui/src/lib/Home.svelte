@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { Button, Dialog, FormField, Headline, Loading, Modal, SnackbarContainer, TextField } from 'attractions';
-  import { SnackbarPositions } from 'attractions/snackbar';
-  import { tick } from 'svelte';
+  import { Button, Dialog, FormField, Headline, Loading, Modal, TextField } from 'attractions';
+  import { getContext, tick } from 'svelte';
   import { push } from 'svelte-spa-router';
-  import { fade } from 'svelte/transition';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { createCollection, deleteCollection, getCollectionsBrief } from '../services';
-  import type { CollectionBrief } from '../typings';
+  import { CollectionBrief, ContextKey, ShowToast } from '../typings';
   import CollectionCard from './CollectionCard.svelte';
   import { Svrollbar } from './Scrollbar';
+
+  const showToast = getContext<ShowToast>(ContextKey.toast);
 
   let briefs: CollectionBrief[] = [] as CollectionBrief[];
   let createDialogVisible = false;
@@ -25,17 +25,6 @@
       newCollectionId = '';
       newCollectionTitle = '';
     });
-  }
-
-  let toast;
-  let lastToastCloseCallback;
-  function showToast(msg: string, duration = 1500) {
-    lastToastCloseCallback?.();
-    const { close } = toast?.showSnackbar({
-      props: { text: msg, transitionOptions: { duration: 200 }, transition: fade },
-      duration,
-    });
-    lastToastCloseCallback = close;
   }
 
   async function fetchCollectionsBrief() {
@@ -152,8 +141,6 @@
       </div>
     </Dialog>
   </Modal>
-
-  <SnackbarContainer bind:this={toast} position={SnackbarPositions.TOP_MIDDLE} />
 {:catch}
   <Headline class="flex justify-center items-center w-screen h-screen text-center">
     Failed to fetch collections info! Please refresh!

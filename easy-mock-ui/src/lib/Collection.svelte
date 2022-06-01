@@ -12,21 +12,18 @@
     Loading,
     Modal,
     Popover,
-    SnackbarContainer,
     Tab,
     TextField,
   } from 'attractions';
   import { PopoverPositions } from 'attractions/popover';
-  import { SnackbarPositions } from 'attractions/snackbar';
   import { patch } from 'golden-fleece';
   import JSON5 from 'json5';
-  import { onDestroy, tick } from 'svelte';
+  import { getContext, onDestroy, tick } from 'svelte';
   import { ChevronLeftIcon, MinusIcon, PlusIcon, ZapIcon, ZapOffIcon } from 'svelte-feather-icons';
-  import { fade } from 'svelte/transition';
   import { LOCAL_DEFAULT_TYPE_KEY } from '../const';
   import { getCollection, saveCollection, updateZapStatus } from '../services';
   import { setupWebSocket } from '../services/websocket';
-  import { Collection, MockItem, MockType } from '../typings';
+  import { Collection, ContextKey, MockItem, MockType, ShowToast } from '../typings';
   import EditIcon from './EditIcon.svelte';
   import Json5Editor, { formatJSON } from './Json5Editor.svelte';
   import MockCardList from './MockCardList.svelte';
@@ -47,6 +44,8 @@
     { label: 'RPC', value: MockType.IDL },
     { label: 'HTTP', value: MockType.HTTP },
   ];
+
+  const showToast = getContext<ShowToast>(ContextKey.toast);
 
   let collection: Collection;
   let selectedType = (function () {
@@ -116,17 +115,6 @@
     collection = await getCollection(id);
     idlList = collection.rules.idl ?? [];
     httpList = collection.rules.http ?? [];
-  }
-
-  let toast;
-  let lastToastCloseCallback;
-  function showToast(msg: string, duration = 1500) {
-    lastToastCloseCallback?.();
-    const { close } = toast?.showSnackbar({
-      props: { text: msg, transitionOptions: { duration: 200 }, transition: fade },
-      duration,
-    });
-    lastToastCloseCallback = close;
   }
 
   function onTabChange(event) {
@@ -598,9 +586,6 @@
       </div>
     </Dialog>
   </Modal>
-
-  <!-- Toast -->
-  <SnackbarContainer bind:this={toast} position={SnackbarPositions.TOP_MIDDLE} />
 {:catch}
   <Headline class="flex justify-center items-center w-screen h-screen text-center">
     Failed to fetch rule list! Please refresh!

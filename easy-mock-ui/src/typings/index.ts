@@ -33,3 +33,8 @@ export interface Collection extends CollectionBrief {
   rules: Rules;
   zap: boolean;
 }
+
+export const enum ContextKey {
+  toast = 'toast',
+}
+export type ShowToast = (msg: string, duration?: number) => void;
