@@ -492,7 +492,7 @@
         </Button>
       </div>
       <div class="flex-1 border-b">
-        <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} />
+        <Json5Editor bind:this={editor} on:blur={onSave} on:save={onSave} readOnly={!hasSelectedRule} />
       </div>
       <div class="flex justify-between items-center">
         <Button

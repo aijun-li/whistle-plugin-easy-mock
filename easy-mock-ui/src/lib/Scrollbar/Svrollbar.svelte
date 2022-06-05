@@ -221,14 +221,14 @@
 
     vThumb.addEventListener('mousedown', onThumbDown, { passive: true });
     vThumb.addEventListener('touchstart', onThumbDown, { passive: true });
-    vThumb.addEventListener('onmouseover', onThumbOver, { passive: true });
-    vThumb.addEventListener('onmouseout', onThumbOut, { passive: true });
+    vThumb.addEventListener('mouseover', onThumbOver, { passive: true });
+    vThumb.addEventListener('mouseout', onThumbOut, { passive: true });
 
     return () => {
       vThumb.removeEventListener('mousedown', onThumbDown);
       vThumb.removeEventListener('touchstart', onThumbDown);
-      vThumb.removeEventListener('onmouseover', onThumbOver);
-      vThumb.removeEventListener('onmouseout', onThumbOut);
+      vThumb.removeEventListener('mouseover', onThumbOver);
+      vThumb.removeEventListener('mouseout', onThumbOut);
     };
   }
 
