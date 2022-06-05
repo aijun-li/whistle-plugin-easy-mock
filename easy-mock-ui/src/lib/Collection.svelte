@@ -412,20 +412,22 @@
           {/if}
         </Button>
         <div slot="popover-content">
-          <Chip small class="w-max max-w-50vw"
-            >Turn on Zap mode will cache all JSON response from GET/POST requests.</Chip
-          >
+          <Chip small class="w-max max-w-50vw">
+            Turn on Zap mode will cache all JSON response from GET/POST requests.
+          </Chip>
         </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
-        <Button class="!rounded-none w-full !px-3" selected={false} on:click={onSave} rectangle>Save</Button>
+        <Button class="!rounded-none w-full !px-3 justify-center" selected={false} on:click={onSave} rectangle
+          >Save</Button
+        >
         <div slot="popover-content">
           <Chip small class="w-max">{`${isMacOS ? 'CMD' : 'CTRL'} + S`}</Chip>
         </div>
       </Popover>
       <Popover position={PopoverPositions.RIGHT}>
         <Button
-          class="!rounded-none w-full !px-3"
+          class="!rounded-none w-full !px-3 justify-center"
           on:click={() => {
             newDialogVisible = true;
           }}
