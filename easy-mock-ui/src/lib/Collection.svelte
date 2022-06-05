@@ -412,7 +412,7 @@
           {/if}
         </Button>
         <div slot="popover-content">
-          <Chip small class="w-max max-w-50vw">
+          <Chip small class="w-max max-w-[30vw]">
             Turn on Zap mode will cache all JSON response from GET/POST requests.
           </Chip>
         </div>
@@ -441,7 +441,7 @@
       </Popover>
     </div>
     <div
-      class={`flex-grow-[1] min-w-sm h-screen pt-5 pl-2 flex flex-col sm:border-r <sm:flex-1 ${
+      class={`w-2/5 min-w-sm h-screen pt-5 pl-2 flex flex-col sm:border-r <sm:flex-1 ${
         hasSelectedRule ? '<sm:hidden' : ''
       }`}
     >
@@ -466,9 +466,7 @@
     </div>
 
     <div
-      class={`flex-grow-[2] h-screen min-w-md <sm:min-w-sm flex flex-col justify-start ${
-        hasSelectedRule ? '' : '<sm:hidden'
-      }`}
+      class={`flex-1 h-screen min-w-md <sm:min-w-sm flex flex-col justify-start ${hasSelectedRule ? '' : '<sm:hidden'}`}
     >
       <div class="flex-none flex border-b items-center justify-between sm:hidden">
         <Button
