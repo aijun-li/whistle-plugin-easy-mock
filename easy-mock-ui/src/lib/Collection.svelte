@@ -441,7 +441,7 @@
       </Popover>
     </div>
     <div
-      class={`w-1/2 min-w-sm h-screen pt-5 pl-5 flex flex-col sm:border-r <sm:flex-1 ${
+      class={`flex-grow-[1] min-w-sm h-screen pt-5 pl-2 flex flex-col sm:border-r <sm:flex-1 ${
         hasSelectedRule ? '<sm:hidden' : ''
       }`}
     >
@@ -466,7 +466,9 @@
     </div>
 
     <div
-      class={`flex-1 h-screen min-w-md <sm:min-w-sm flex flex-col justify-start ${hasSelectedRule ? '' : '<sm:hidden'}`}
+      class={`flex-grow-[2] h-screen min-w-md <sm:min-w-sm flex flex-col justify-start ${
+        hasSelectedRule ? '' : '<sm:hidden'
+      }`}
     >
       <div class="flex-none flex border-b items-center justify-between sm:hidden">
         <Button
